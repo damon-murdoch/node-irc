@@ -1,0 +1,20 @@
+{
+  "name": "node-irc",
+  "version": "1.0.0",
+  "description": "Damon Murdoch's Assignment 1 for Web Programming\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C, making the dashboard and overarching control systems for an irc chat program using NodeJS",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "irc"
+  ],
+  "author": "Damon Murdoch (s2970548)",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "i": "^0.3.6",
+    "jquery": "^3.3.1"
+  }
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "name": "super",
+    "mail": "super@ircadmin.com",
+    "pass": "super",
+    "salt": null
+  },
+  {
+    "name": "Damon",
+    "mail": "test@gmail.com",
+    "pass": "yeet",
+    "salt": null
+  }
+]
