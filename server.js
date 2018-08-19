@@ -25,7 +25,12 @@ const app = express();
 
 // File Directories
 app.use(express.static(__dirname+'/www'));
-app.use(express.static(__dirname+'/img'));
+app.use(express.static(__dirname+'/www/img'));
+
+app.use(express.static(__dirname+'/www/login'));
+app.use(express.static(__dirname+'/www/logout'));
+app.use(express.static(__dirname+'/www/register'));
+app.use(express.static(__dirname+'/www/dashboard'));
 
 // Bodyparser setup
 app.use(bodyParser.urlencoded({extended:false}));
@@ -46,28 +51,29 @@ const server = http.listen(port,host,function()
 
 // Function Declarations
 
-// Page Actions
+// Page Actions (get)
 
 // Index - Login Page
 app.get('/',function(req,res)
 {
-	res.sendFile(__dirname + "/www/login.html");
+	res.sendFile(__dirname + "/www/login/login.html");
 });
 
 // Logout Page
-app.get('/',function(req,res)
+app.get('/logout',function(req,res)
 {
 	// if logged in, send page
 	// else send 403
-	res.sendFile(__dirname + "/www/logout.html");
+	res.sendFile(__dirname + "/www/logout/logout.html");
 });
 
 // Dashboard Page
-app.get('/',function(req,res)
+app.get('/dashboard',function(req,res)
 {
 	// if logged in, send page
 	// else send 403
-	res.sendFile(__dirname + "/www/dashboard.html");
+	//res.sendFile(__dirname + "/www/dashboard/dashboard.html");
+	
 });
 
 app.get('/groups/:groupno?',function(req,res)
@@ -82,6 +88,37 @@ app.get('/groups/:group?/:room?',function(req,res)
 	// if user is in group, view group page
 	// else send 403
 	res.send("You're in the '" + req.params.room + "' room in the '" + req.params.group + "' group!");
+});
+
+// Page Actions (post)
+
+app.post('/login', function(request, response)
+{	
+    const name = request.body.name;
+    const pass = request.body.pass;
+
+	for(var i=0;i<users.length;i++)
+	{
+		if (users[i]["name"] == name)
+		{
+			if(users[i]["pass"] == pass)
+			{
+				// logged in!
+				result = {"loggedIn":true};
+				response.send(result);
+			}
+			else
+			{
+				// wrong password
+				result = {"loggedIn":false,"err":0};
+				response.send(result);
+			}
+		}
+	}
+	
+	// user not found
+	result = {"loggedIn":false,"err":1};
+	response.send(result);
 });
 
 // JSON Functions
