@@ -39,7 +39,7 @@ $(document).ready(function ()
 					document.getElementById('errordiv').innerHTML += 
 						"Password was incorrect! Do you need to reset your password?";
 				}
-				if(data["err"]==1)
+				else if(data["err"]==1)
 				{
 					console.log("User does not exist! Do you need to register?");
 					document.getElementById('errordiv').innerHTML += 

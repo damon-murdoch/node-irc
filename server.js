@@ -1,8 +1,8 @@
 // Includes
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const fs = require("fs");
+const dateTime = require('node-datetime');
 
 // JSON Files
 
@@ -70,32 +70,56 @@ app.get('/logout',function(req,res)
 // Dashboard Page
 app.get('/dashboard',function(req,res)
 {
-	// if logged in, send page
-	// else send 403
-	//res.sendFile(__dirname + "/www/dashboard/dashboard.html");
-	
-});
-
-app.get('/groups/:groupno?',function(req,res)
-{
-	// if user is in group, view group page
-	// else send 403
-	res.send("You're on the " + req.params.groupno + " group!");
-});
-
-app.get('/groups/:group?/:room?',function(req,res)
-{
-	// if user is in group, view group page
-	// else send 403
-	res.send("You're in the '" + req.params.room + "' room in the '" + req.params.group + "' group!");
+	res.sendFile(__dirname+"/www/dashboard/dashboard.html");
 });
 
 // Page Actions (post)
 
-app.post('/login', function(request, response)
+app.post('/group',function(req,res)
+{
+	const name = req.body.name;
+	const group = req.body.group;
+	
+	var response = 
+	{
+		
+	};
+});
+
+app.post('/data',function(req,res)
+{
+	const name = req.body.name;
+	
+	var response = 
+	{
+		'super':false,
+		'groups':[]
+	};
+	
+	for(var i = 0; i < superadmins.length; i++)
+	{
+		if(superadmins[i]["name"] == name)
+		{
+			response["super"] = true;
+			break;
+		}
+	}
+	
+	for(var i = 0; i < users.length; i++)
+	{
+		if(users[i]["name"] == name)
+		{
+			response['groups'] = users[i]['groups'];
+			break;
+		}
+	}
+	res.send(response);
+});
+
+app.post('/login', function(req, res)
 {	
-    const name = request.body.name;
-    const pass = request.body.pass;
+    const name = req.body.name;
+    const pass = req.body.pass;
 
 	for(var i=0;i<users.length;i++)
 	{
@@ -105,20 +129,20 @@ app.post('/login', function(request, response)
 			{
 				// logged in!
 				result = {"loggedIn":true};
-				response.send(result);
+				res.send(result);
 			}
 			else
 			{
 				// wrong password
 				result = {"loggedIn":false,"err":0};
-				response.send(result);
+				res.send(result);
 			}
 		}
 	}
 	
 	// user not found
 	result = {"loggedIn":false,"err":1};
-	response.send(result);
+	res.send(result);
 });
 
 // JSON Functions
@@ -141,7 +165,8 @@ const userJSON = (name,mail,pass) =>
 		"name":name,
 		"mail":mail,
 		"pass":pass,
-		"salt":null
+		"salt":null,
+		"groups":["lobby"]
 	};
 	
 	return json;
@@ -158,36 +183,29 @@ const superadminJSON = (name) =>
 	return json;
 };
 
-// New Group Admin
-const groupadminJSON = (name,group) =>
-{
-	json = 
-	{
-		"name":name,
-		"group":group
-	};
-	
-	return json;
-};
-
 // New Group
 const groupJSON = (group) =>
 {
 	json = 
 	{
-		"group":group
+		"group":group,
+		"admins":[],
+		"rooms":[]
 	};
 	
 	return json;
 };
 
-// New Room
-const roomJSON = (room,group) =>
+// New Message
+const msgJSON = (user,msg) =>
 {
+	const dt = dateTime.create();
+	
 	json = 
 	{
-		"room":room,
-		"group":group
+		"user":user,
+		"time":dt.format('Y-m-d H:M:S'),
+		"msg":msg
 	};
 	
 	return json;
@@ -278,20 +296,30 @@ const demoteSuperAdmin = (user) =>
 
 const promoteGroupAdmin = (user,group) =>
 {
-	for(var i = 0; i < groupadmins.length; i++)
+	var allowed = false;
+
+	for(var i = 0; i < groups.length; i++)
 	{
-		if (groupadmins[i]["name"] == user && groupadmins[i]["group"] == group)
+		if (groups[i]["group"] == group)
 		{
-			return false;
+			for(var j = 0; j < groups[i].admins.length; j++)
+			{
+				if(groups[i].admins[j] == name)
+				{
+					return false;
+				}
+			}
+			groups[i].admins.append(name);
+			break;
 		}
 	}
 	
-	writeJSON(groupadminDIR,groupadmins);
+	writeJSON(groupadminDIR,groups);
 	
 	return true;
 };
 
-const demoteGroupAdmin = (user,group) =>
+const demoteGroupAdmin = (caller,user,group) =>
 {
 	for(var i = 0; i < groupadmins.length; i++)
 	{
@@ -346,19 +374,25 @@ const deleteGroup = (group) =>
 
 const createRoom = (room,group) =>
 {
-	for(var i = 0;i<rooms.length;i++)
+	for(var i = 0; i < groups.length; i++)
 	{
-		if(rooms[i]["group"] == group && rooms[i]["room"] == room)
+		if(groups[i]["name"]==group)
 		{
-			return false;
+			for(var j = 0; j < rooms.length; j++)
+			{
+				if(groups[i]["rooms"][j] == room)
+				{
+					return false;
+				}
+			}
+			groups[i]["rooms"].push(roomJSON(room));
+			break;
 		}
 	}
 	
-	rooms.push(roomJSON(room,group));
+	writeJSON(groupDIR,groups);
 	
-	writeJSON(roomDIR,rooms);
-	
-	returntrue;
+	return true;
 };
 
 const deleteRoom = (room,group) =>

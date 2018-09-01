@@ -3,12 +3,14 @@
     "name": "super",
     "mail": "super@ircadmin.com",
     "pass": "super",
-    "salt": null
+    "salt": null,
+	"groups":["lobby","admin"]
   },
   {
     "name": "Damon",
     "mail": "test@gmail.com",
     "pass": "yeet",
-    "salt": null
+    "salt": null,
+	"groups":["lobby"]
   }
 ]
