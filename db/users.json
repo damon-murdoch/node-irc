@@ -4,13 +4,42 @@
     "mail": "super@ircadmin.com",
     "pass": "super",
     "salt": null,
-	"groups":["lobby","admin"]
+    "groups": []
+  },
+  {
+    "name": "yeet",
+    "mail": "yeet",
+    "pass": "yeet",
+    "salt": null,
+    "groups": [
+      "lobby"
+    ]
   },
   {
     "name": "Damon",
-    "mail": "test@gmail.com",
-    "pass": "yeet",
+    "mail": "damonmurdoch1@gmail.com",
+    "pass": "fuck",
     "salt": null,
-	"groups":["lobby"]
+    "groups": [
+      "lobby"
+    ]
+  },
+  {
+    "name": "dm1",
+    "mail": "23",
+    "pass": "123",
+    "salt": null,
+    "groups": [
+      "lobby"
+    ]
+  },
+  {
+    "name": "yet",
+    "mail": "yote",
+    "pass": "meme",
+    "salt": null,
+    "groups": [
+      "lobby"
+    ]
   }
 ]
