@@ -175,7 +175,7 @@ app.post('/api/rmrmv',function(req,res)
 app.post('/api/getgroup',function(req,res)
 {
 	
-	console.log("request to /api/group");
+	console.log("request to /api/getgroup");
 	
 	const name = req.body.name;
 	const group = req.body.group;
@@ -200,7 +200,7 @@ app.post('/api/getgroup',function(req,res)
 		{
 			if(groupadmins[i].name == name)
 			{
-				response.admin - true;
+				response.admin = true;
 			}
 		}
 	}
@@ -210,17 +210,29 @@ app.post('/api/getgroup',function(req,res)
 		{
 			if (groups[i]["group"]==group)
 			{
-				if(!response.admin)
+				for(var j = 0; j < groups[i].rooms.length; j++)
 				{
-					
-				}
-				else
-					response.rooms = groups[i].rooms;
+					response.rooms.push(groups[i].rooms[j].room);
 				}
 			}
 		}
 	}
-
+	else
+	{
+		for(var i = 0; i < users.length; i++)
+		{
+			if(users[i].name == name)
+			{
+				for(var j = 0; j < users[i].groups.length; j++)
+				{
+					if(users[j].groups[j].group == group)
+					{
+						response.rooms = users[j].groups[j].rooms;
+					}
+				}
+			}
+		}
+	}
 	res.send(response);
 });
 
@@ -467,6 +479,8 @@ app.post('/api/data',function(req,res)
 {
 	console.log("request to /api/data");
 	
+	console.log(req.body);
+	
 	const name = req.body.name;
 	
 	var response = 
@@ -488,7 +502,7 @@ app.post('/api/data',function(req,res)
 	{
 		for(var i = 0; i < superadmins.length; i++)
 		{
-			if(groupadmins[i]["name"] == name)
+			if(groupadmins[i] == name)
 			{
 				response["rank"] = 'group';
 				break;
@@ -509,8 +523,12 @@ app.post('/api/data',function(req,res)
 		{
 			if(users[i]["name"] == name)
 			{
-				response['groups'] = users[i]['groups'];
-				break;
+				//response['groups'] = users[i]['groups'];
+				//break;
+				for(var j = 0; j < users[i].groups.length; j++)
+				{
+					response.groups.push(users[i].groups[j].group);
+				}
 			}
 		}
 	}

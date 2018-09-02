@@ -8,5 +8,18 @@
         "log": []
       }
     ]
+  },
+  {
+    "group": "admin",
+    "rooms": [
+      {
+        "room": "general",
+        "log": []
+      },
+      {
+        "room": "important",
+        "log": []
+      }
+    ]
   }
 ]

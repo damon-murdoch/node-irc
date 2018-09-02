@@ -14,12 +14,18 @@
 	</div>
 	
 	<div id="grpdiv">
-		<h4> Groups </h4>
+		<h4> Groups: </h4>
 		<div *ngFor="let group of groups">
-			<a (click) = getGroupData(group)>{{group}}</a>
+			<h5 (click) = getGroupData(group)>group::{{group}}</h5>
 		</div>
-		<div id="activegroup"> 
-			
+		<div *ngIf="selectedgroupbool" id="activegroup"> 
+			<div *ngFor="let room of rooms">
+				<a (click) = getRoomData(room)>{{selectedgroup}}::{{room}}</a>
+			</div>
+		</div>
+		<div *ngIf="selectedroombool" id="activechat">
+			<p> Chat messages go here lol</p>
+			<input type="text" placeholder="send message" id="sendmessage">
 		</div>
 	</div>
 	

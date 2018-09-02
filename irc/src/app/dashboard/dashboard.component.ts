@@ -21,29 +21,60 @@ export class DashboardComponent implements OnInit {
 	
 	selectedgroup:string;
 	
+	selectedgroupbool:boolean;
+	
 	rooms:string[];
 	
 	selectedroom:string;
+	
+	selectedroombool:boolean;
+	
+	messages:string[];
 
 	constructor(private _userService:UserService,  private _dataService:DataService, private router: Router) { }
 
 	getGroupData(group)
 	{
+		this.selectedgroup = group;
+		this.selectedgroupbool = true;
+		
 		let data = 
 		{
-			name:name,
+			name:this.name,
 			group:group
 		}
 		this._dataService.getGroupData(data).subscribe(
 			data =>
 			{
+				this.rooms = data["rooms"];
+			}
+		);
+	}
+	
+	getRoomData(room)
+	{
+		this.selectedroom = room;
+		this.selectedroombool = true;
+		
+		let data = 
+		{
+			name:this.name,
+			group:this.selectedgroup,
+			room:room
+		}
+		this._dataService.getRoomData(data).subscribe(
+			data =>
+			{
 				
+				//this.messages = data;
 			}
 		);
 	}
 	
 	ngOnInit()
 	{
+		this.selectedgroupbool = false;
+		this.selectedroombool = false;
 		
 		if (!localStorage.name || !localStorage.pass)
 		{

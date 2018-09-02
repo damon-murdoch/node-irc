@@ -4,20 +4,27 @@
     "mail": "super@ircadmin.com",
     "pass": "super",
     "salt": null,
-    "groups": []
+    "groups": [
+      {
+        "group": "lobby",
+        "rooms": [
+          "general"
+        ]
+      }
+    ]
   },
   {
-    "name": "noobslayer420",
-    "mail": "kush@yeet.com",
-    "pass": "die",
+    "name": "testuser",
+    "mail": "testemail@test.com",
+    "pass": "test",
     "salt": null,
-    "groups": []
-  },
-  {
-    "name": "Damon",
-    "mail": "damonmurdoch1@gmail.com",
-    "pass": "yeet",
-    "salt": null,
-    "groups": []
+    "groups": [
+      {
+        "group": "lobby",
+        "rooms": [
+          "general"
+        ]
+      }
+    ]
   }
 ]
