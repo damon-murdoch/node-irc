@@ -1,6 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
-
-#disclaim
+.toolbaritem
 {
-	font-size:6pt;
+   display: inline-block;
+   vertical-align: top;
+}
+
+.toolbar
+{
+	border: 2px solid black;
+	border-radius: 5px;
 }

@@ -11,6 +11,7 @@ import { RegisterComponent } from './register/register.component';
 import {HttpClientModule } from '@angular/common/http';
 import { SuperadmintoolbarComponent } from './superadmintoolbar/superadmintoolbar.component';
 import { GroupadmintoolbarComponent } from './groupadmintoolbar/groupadmintoolbar.component';
+import { GroupmenuComponent } from './groupmenu/groupmenu.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { GroupadmintoolbarComponent } from './groupadmintoolbar/groupadmintoolba
     DashboardComponent,
     RegisterComponent,
     SuperadmintoolbarComponent,
-    GroupadmintoolbarComponent
+    GroupadmintoolbarComponent,
+    GroupmenuComponent
   ],
   imports: [
     BrowserModule,

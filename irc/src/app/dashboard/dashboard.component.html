@@ -1,3 +1,19 @@
-<p>
-  dashboard works!
-</p>
+<div id="dashboard">
+	
+	<h3> Dashboard </h3>
+	<h4> Welcome, {{name}} </h4>
+	
+	<p> User Privileges: {{rank}} </p>
+	
+	<div *ngIf="rank=='super'">
+		<app-superadmintoolbar></app-superadmintoolbar>
+	</div>
+	
+	<div *ngIf="rank == 'group' || rank == 'super'">
+		<app-groupadmintoolbar></app-groupadmintoolbar>
+	</div>
+	
+	<div id="logoutdiv"> 
+		<a href="#" (click)="logout()"> Log Out </a>
+	</div>
+</div>

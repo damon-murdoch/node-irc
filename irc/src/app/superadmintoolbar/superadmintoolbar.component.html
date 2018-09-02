@@ -1,3 +1,54 @@
-<p>
-  superadmintoolbar works!
-</p>
+<a href="#" (click) = "hideToggle()">{{hidemsg}}</a>
+
+<div [hidden]=hide id="superadmintoolbar" class="toolbar">
+	
+	<h3> Super Administrator Toolbar </h3>
+	
+	
+	<form (submit)="createUser(name,mail,pass)" class="toolbaritem">
+		<h4> Create User </h4>
+	
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="crname" type="text" placeholder="Username" id="crname" name="crname">
+		</div>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="crmail" type="text" placeholder="Email Address" id="crmail" name="crmail">
+		</div>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="crpass" type="password" placeholder="Password" id="crpass" name="crpass">
+		</div>
+		
+		<button type="submit" id="crsubmit">Register</button>
+	</form>
+
+	
+	<form (submit) = "promoteUser(prname)" class="toolbaritem">
+	
+		<h4> Promote User </h4>
+	
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="prname" type="text" placeholder="Username" id="prname" name="prname">
+		</div>
+		
+		<button type="submit" id="prsubmit">Promote</button>
+		
+	</form>
+	
+	
+	<form (submit) = "demoteUser(dmname)" class="toolbaritem">
+	
+		<h4> Demote User </h4>
+	
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="dmname" type="text" placeholder="Username" id="dmname" name="dmname">
+		</div>
+		
+		<button type="submit" id="dmsubmit">Demote</button>
+		
+	</form>
+</div>
+<div id="saErrmsg">
+	{{errormsg}}
+</div>

@@ -1,3 +1,91 @@
-<p>
-  groupadmintoolbar works!
-</p>
+<a href="#" (click) = "hideToggle()">{{hidemsg}}</a>
+
+<div [hidden]=hide id="groupadmintoolbar" class="toolbar">
+
+	<h3> Group Administrator Toolbar </h3>
+	
+	
+	<form (submit)="createGroup(crgrp)" class="toolbaritem">
+		
+		<h4> Create Group </h4>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="crgrp" type="text" placeholder="Room Name" id="crgrp" name="crgrp">
+		</div>
+		
+		<button type="submit" id="crgsubmit">Create</button>
+		
+	</form>
+	
+	
+	<form (submit)="deleteGroup(dlgrp)" class="toolbaritem">
+		
+		<h4> Delete Group </h4>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="dlgrp" type="text" placeholder="Group Name" id="dlgrp" name="dlgrp">
+		</div>
+		
+		<button type="submit" id="dlgsubmit">Delete</button>
+		
+	</form>
+
+	
+	
+	<form (submit)="createRoom(crrmgrp,crrm)" class="toolbaritem">
+		
+		<h4> Create Room </h4>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="crrmgrp" type="text" placeholder="Group Name" id="rmgrp" name="rmgrp">
+		</div>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="crrm" type="text" placeholder="Room Name" id="crrm" name="crrm">
+		</div>
+		
+		<button type="submit" id="crmsubmit">Create</button>
+		
+	</form>
+	
+	
+	
+	<form (submit)="deleteRoom(dlrmgrp,dlrm)" class="toolbaritem">
+		
+		<h4> Delete Room </h4>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="dlrmgrp" type="text" placeholder="Group Name" id="rmgrp" name="rmgrp">
+		</div>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="dlrm" type="text" placeholder="Room Name" id="crrm" name="crrm">
+		</div>
+		
+		<button type="submit" id="drmsubmit">Delete</button>
+		
+	</form>
+	
+	<h4> Block User </h4>
+	
+	<form (submit)="blockUser(name,dlrmgrp,dlrm)" class="toolbaritem">
+	
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="name" type="text" placeholder="User Name" id="blname" name="blname">
+		</div>
+	
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="dlrmgrp" type="text" placeholder="Group Name" id="rmgrp" name="rmgrp">
+		</div>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="dlrm" type="text" placeholder="Room Name" id="crrm" name="crrm">
+		</div>
+		
+		<button type="submit" id="drmsubmit">Block</button>
+	
+	</form>
+</div>
+<div id="gaErrmsg">
+	{{errormsg}}
+</div>

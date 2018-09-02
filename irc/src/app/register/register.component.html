@@ -4,7 +4,7 @@
 	</h3>
 	
 	<p> 
-		Have an account? login <a routerLink="/register" routerLinkActive="active">here</a>
+		Have an account? login <a routerLink="/" routerLinkActive="active">here</a>
 	</p>
 	
 	<form (submit)="createUser(name,mail,pass)">
@@ -20,4 +20,7 @@
 			
 		<button type="submit" id="submit">Register</button>
 	</form>
+	<div id="errmsg">
+		{{errormsg}}
+	</div>
 </div>

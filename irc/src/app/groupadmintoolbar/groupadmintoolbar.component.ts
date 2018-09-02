@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders} from '@angular/common/http';
+import { UserService } from '../user.service';
+import { DataService } from '../data.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-groupadmintoolbar',
@@ -7,9 +11,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GroupadmintoolbarComponent implements OnInit {
 
-  constructor() { }
+	hide:boolean;
+	
+	errormsg:string;
 
-  ngOnInit() {
-  }
-
+	constructor(private _userService:UserService, private _dataService:DataService, private router: Router) { }
+	
+	ngOnInit(){
+		this.hide=true;
+	}
 }

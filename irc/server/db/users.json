@@ -41,5 +41,14 @@
     "groups": [
       "lobby"
     ]
+  },
+  {
+    "name": "Damontest",
+    "mail": "teastagainlol",
+    "pass": "yeet",
+    "salt": null,
+    "groups": [
+      "lobby"
+    ]
   }
 ]

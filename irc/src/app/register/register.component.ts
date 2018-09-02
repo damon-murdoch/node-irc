@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders} from '@angular/common/http';
 import { UserService } from '../user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -10,12 +11,14 @@ import { UserService } from '../user.service';
 
 export class RegisterComponent implements OnInit {
 
-	constructor(private _userService:UserService) {}
+	errormsg:string;
+
+	constructor(private _userService:UserService, private router: Router) {}
 
 	ngOnInit() {
 		
 	}
-
+	
 	createUser(name,mail,pass,salt)
 	{
 		let user = 
@@ -27,9 +30,19 @@ export class RegisterComponent implements OnInit {
 		};
 		
 		this._userService.createUser(user).subscribe(
-			data => console.log(data),
-			err => console.log(err),
-			() => console.log('Created user')
+			data => 
+			{
+				if(data["success"])
+				{
+					console.log("Successfully registered user!");
+					this.router.navigate(['/']);
+				}
+				else
+				{
+					this.errormsg = data["err"];
+					console.log("Error: "+data["err"]);
+				}
+			}
 		);
 	}
 	

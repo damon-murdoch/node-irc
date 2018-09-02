@@ -23,15 +23,19 @@ export class UserService {
 	loginUser(user)
 	{
 		let body = JSON.stringify(user);
-		console.log("Attempting to log in ..."+body);
 		return this.http.post('http://127.0.0.1:1337/api/login',body,httpOptions);
 	}
 	
 	createUser(user)
 	{
 		let body = JSON.stringify(user);
-		console.log("Attempting to create ..."+body);
 		return this.http.post('http://127.0.0.1:1337/api/register/',body,httpOptions);
+	}
+	
+	blockUser(user)
+	{
+		let body = JSON.stringify(user);
+		return this.http.post('http://127.0.0.1:1337/api/blockuser',body,httpOptions);
 	}
 	
 	promoteSuperAdmin(user)

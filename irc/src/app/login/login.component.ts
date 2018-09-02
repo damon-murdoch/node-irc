@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders} from '@angular/common/http';
 import { UserService } from '../user.service';
+import { Router } from "@angular/router";
 
 @Component({
 	selector: 'app-login',
@@ -11,20 +12,13 @@ import { UserService } from '../user.service';
 export class LoginComponent implements OnInit {
 	
 
-	constructor(private _userService:UserService) {}
+	constructor(private _userService:UserService, private router: Router) {}
 
 	ngOnInit() {}
 	
 	handleLogin(name,pass,data)
 	{
-		if(data.loggedIn)
-		{
-			this._userService.setLocalStorage(name,pass);
-		}
-		else
-		{
-			localStorage.clear();
-		}
+
 	}
 	
 	loginUser(name,pass)
@@ -36,7 +30,18 @@ export class LoginComponent implements OnInit {
 		}
 
 		this._userService.loginUser(user).subscribe(
-			data => this.handleLogin(name,pass,data)
+			data => 
+			{
+				if(data["loggedIn"])
+				{
+					this._userService.setLocalStorage(name,pass);
+					this.router.navigate(['/dashboard']);
+				}
+				else
+				{
+					localStorage.clear();
+				}
+			}	
 		);
 	}	
 }

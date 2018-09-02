@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from '../user.service';
+import { DataService } from '../data.service';
+import { Router } from '@angular/router';
 
 import {SuperadmintoolbarComponent} from '../superadmintoolbar/superadmintoolbar.component';
 import {GroupadmintoolbarComponent} from '../groupadmintoolbar/groupadmintoolbar.component';
@@ -8,11 +11,49 @@ import {GroupadmintoolbarComponent} from '../groupadmintoolbar/groupadmintoolbar
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
+
 export class DashboardComponent implements OnInit {
 
-  constructor() { }
+	name:string;
+	rank:string;
+	
+	groups:string[];
+	
+	selectedgroup:string;
+	
+	rooms:string[];
+	
+	selectedroom:string;
 
-  ngOnInit() {
-  }
+	constructor(private _userService:UserService,  private _dataService:DataService, private router: Router) { }
 
+	ngOnInit()
+	{
+		
+		if (!localStorage.name || !localStorage.pass)
+		{
+			this.router.navigate(['/']);
+		} 
+	
+		let data = 
+		{
+			name:localStorage["name"]
+		};
+		
+		this._dataService.getData(data).subscribe(
+			data =>
+			{
+				this.rank = data["rank"];
+				this.groups = data["groups"];
+				
+				console.log(this.groups);
+			}
+		);
+	}
+	
+	logout()
+	{
+		localStorage.clear();
+		this.router.navigate(['/']);
+	}
 }

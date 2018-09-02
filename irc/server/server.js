@@ -97,6 +97,32 @@ app.post('/api/register',function(req,res)
 	}
 });
 
+app.post('/api/block',function(req,res)
+{
+	console.log("request to /api/block");
+	
+	const name = req.body.name;
+	const group = req.body.group;
+	const room = req.body.room;
+	
+	var response = 
+	{
+		"success":false,
+		"err":""
+	};
+	
+	if(blockUser(name,room,group))
+	{
+		response.success = true;
+		res.send(response);
+	}
+	else
+	{
+		response.err = "User does not exist / user is already blocked";
+		res.send(response);
+	}
+});
+
 app.post('/api/group',function(req,res)
 {
 	
@@ -388,7 +414,7 @@ app.post('/api/data',function(req,res)
 	
 	var response = 
 	{
-		'super':false,
+		'rank':'standard',
 		'groups':[]
 	};
 	
@@ -396,12 +422,24 @@ app.post('/api/data',function(req,res)
 	{
 		if(superadmins[i]["name"] == name)
 		{
-			response["super"] = true;
+			response["rank"] = 'super';
 			break;
 		}
 	}
 	
-	if(response.super)
+	if(response["rank"] == 'standard')
+	{
+		for(var i = 0; i < superadmins.length; i++)
+		{
+			if(groupadmins[i]["name"] == name)
+			{
+				response["rank"] = 'group';
+				break;
+			}
+		}
+	}
+	
+	if(response["rank"] =='super')
 	{
 		for(var i = 0; i < groups.length; i++)
 		{
@@ -538,17 +576,17 @@ const msgJSON = (user,msg) =>
 
 const register = (name,mail,pass) =>
 {
-	if(name.indexOf(' ') > -1)
+	if(!name || name.indexOf(' ') > -1)
 	{
 		return false;
 	}
 	
-	if(mail.indexOf(' ') > -1)
+	if(!mail || mail.indexOf(' ') > -1)
 	{
 		return false;
 	}
 	
-	if(pass.indexOf(' ') > -1)
+	if(!pass || pass.indexOf(' ') > -1)
 	{
 		return false;
 	}
@@ -779,7 +817,7 @@ const deleteRoom = (room,group) =>
 	return false;
 };
 
-const blockUser = (group,room,user) =>
+const blockUser = (name,room,group) =>
 {
 	for(var i = 0; i < groups.length; i++)
 	{
@@ -789,16 +827,25 @@ const blockUser = (group,room,user) =>
 			{
 				if(groups[i].rooms[j].room == room)
 				{
-					groups[i].rooms.splice(j,1);
+					for(var k = 0; k < groups[i].rooms[j].blocked.length; k++)
+					{
+						if(name == groups[i].rooms[j].blocked[k])
+						{
+							return false;
+						}
+					}
+					
+					groups[i].rooms[j].blocked.push(name);
+					
 					writeJSON(groupDIR,groups);
+					
 					return true;
 				}
 			}
 			break;
 		}
 	}
-	
 	return false;
-}
+};
 
 // Main Process
