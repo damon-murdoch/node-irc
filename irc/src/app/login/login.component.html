@@ -1,5 +1,15 @@
-<form (submit)="loginUser($event)">
-  <input [(ngModel)]="name" type="text" placeholder="Username" id="name" name="name">
-  <input [(ngModel)]="pass" type="password" placeholder="Password" id="pass" name="pass">
-  <button type="submit">Submit</button>
-</form>
+<div id="login">
+	<h3>
+		Login Page
+	</h3>
+	<p> 
+		No account? Register <a routerLink="/register" routerLinkActive="active">here</a>
+	</p>
+	<form (submit)="loginUser(name,pass)">
+		<label text="Username"> Username </label>
+		<input [(ngModel)]="name" type="text" placeholder="Username" id="name" name="name">
+		<label text="Password"> Password </label>
+		<input [(ngModel)]="pass" type="password" placeholder="Password" id="pass" name="pass">
+		<button type="submit">Submit</button>
+	</form>
+</div>

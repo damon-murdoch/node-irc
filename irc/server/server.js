@@ -1,9 +1,16 @@
 // Includes
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 const fs = require("fs");
 const dateTime = require('node-datetime');
+const cors = require('cors');
 
+var corsOptions = 
+{
+	origin:"http://localhost:1337",
+	optionsSuccessStatus: 200
+}
 // JSON Files
 
 const userDIR = './db/users.json';
@@ -23,6 +30,8 @@ var groupadmins = require(groupadminDIR);
 // App Setup Data
 const app = express();
 
+const http = require('http').Server(app);
+
 // File Directories
 app.use(express.static(__dirname+'/www'));
 app.use(express.static(__dirname+'/www/img'));
@@ -32,19 +41,11 @@ app.use(express.static(__dirname+'/www/logout'));
 app.use(express.static(__dirname+'/www/register'));
 app.use(express.static(__dirname+'/www/dashboard'));
 
+app.use(express.static(path.join(__dirname,'../dist/irc')));
+
 // Bodyparser setup
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
-
-const http = require('http').Server(app);
-
-const cors = require('cors');
-
-var corsOptions= 
-{
-	origin:"http://localhost:1337",
-	optionsSuccessStatus: 200
-}
 
 // Server Connection Information
 const host = '127.0.0.1';
@@ -62,27 +63,19 @@ const server = http.listen(port,host,function()
 // Page Actions (get)
 
 // Index - Login Page
-app.get('/',function(req,res)
-{
-	res.sendFile(__dirname + "/www/login/login.html");
-});
 
-// Dashboard Page
-app.get('/dashboard',function(req,res)
+app.get('/*',function(req,res)
 {
-	res.sendFile(__dirname+"/www/dashboard/dashboard.html");
-});
-
-// Register Page
-app.get('/register',function(req,res)
-{
-	res.sendFile(__dirname+"/www/register/register.html");
+	res.sendFile('index.html',{'root':'../dist/irc/'});
 });
 
 // Page Actions (post)
 
-app.post('api/register',function(req,res)
+app.post('/api/register',function(req,res)
 {
+	
+	console.log("request to /api/register");
+	
 	var response = {
 		"success":false,
 		"err":""
@@ -104,8 +97,11 @@ app.post('api/register',function(req,res)
 	}
 });
 
-app.post('api/group',function(req,res)
+app.post('/api/group',function(req,res)
 {
+	
+	console.log("request to /api/group");
+	
 	const name = req.body.name;
 	const group = req.body.group;
 	
@@ -144,8 +140,11 @@ app.post('api/group',function(req,res)
 	res.send(response);
 });
 
-app.post('api/superpromote',function(req,res)
+app.post('/api/superpromote',function(req,res)
 {
+	
+	console.log("request to /api/superpromote");
+	
 	const name = req.body.name;
 	
 	response = {
@@ -165,8 +164,10 @@ app.post('api/superpromote',function(req,res)
 	}
 });
 
-app.post('api/superdemote',function(req,res)
+app.post('/api/superdemote',function(req,res)
 {
+	console.log("request to /api/superdemote");
+	
 	const name = req.body.name;
 	
 	response = {
@@ -186,8 +187,11 @@ app.post('api/superdemote',function(req,res)
 	}
 });
 
-app.post('api/grouppromote',function(req,res)
+app.post('/api/grouppromote',function(req,res)
 {
+	
+	console.log("request to /api/grouppromote");
+	
 	const name = req.body.name;
 	
 	response = {
@@ -207,8 +211,11 @@ app.post('api/grouppromote',function(req,res)
 	}
 });
 
-app.post('api/groupdemote',function(req,res)
+app.post('/api/groupdemote',function(req,res)
 {
+	
+	console.log("request to /api/groupdemote");
+	
 	const name = req.body.name;
 	
 	response = {
@@ -228,8 +235,11 @@ app.post('api/groupdemote',function(req,res)
 	}
 });
 
-app.post('api/creategroup',function(req,res)
+app.post('/api/creategroup',function(req,res)
 {
+	
+	console.log("request to /api/creategroup");
+	
 	const group = req.body.group;
 	const owner = req.body.name;
 	
@@ -258,8 +268,11 @@ app.post('api/creategroup',function(req,res)
 	}	
 });
 
-app.post('api/deletegroup',function(req,res)
+app.post('/api/deletegroup',function(req,res)
 {
+	
+	console.log("request to /api/deletegroup");
+	
 	const group = req.body.group;
 	
 	response = {
@@ -291,8 +304,11 @@ app.post('api/deletegroup',function(req,res)
 	}
 });
 
-app.post('api/createroom',function(req,res)
+app.post('/api/createroom',function(req,res)
 {
+	
+	console.log("request to /api/createroom");
+	
 	const group = req.body.group;
 	const room = req.body.room;
 	
@@ -313,8 +329,11 @@ app.post('api/createroom',function(req,res)
 	}	
 });
 
-app.post('api/deleteroom',function(req,res)
+app.post('/api/deleteroom',function(req,res)
 {
+	
+	console.log("request to /api/deleteroom");
+	
 	const group = req.body.group;
 	const room = req.body.room;
 	
@@ -335,8 +354,10 @@ app.post('api/deleteroom',function(req,res)
 	}
 });
 
-app.post('api/room',function(req,res)
+app.post('/api/room',function(req,res)
 {
+	console.log("request to /api/room");
+	
 	const name = req.body.name;
 	const group = req.body.group;
 	const room = req.body.room;
@@ -359,8 +380,10 @@ app.post('api/room',function(req,res)
 	res.send(response);
 });
 
-app.post('api/data',function(req,res)
+app.post('/api/data',function(req,res)
 {
+	console.log("request to /api/data");
+	
 	const name = req.body.name;
 	
 	var response = 
@@ -399,8 +422,10 @@ app.post('api/data',function(req,res)
 	res.send(response);
 });
 
-app.post('api/login', function(req, res)
+app.post('/api/login', function(req, res)
 {	
+	console.log("request to /api/login");
+
     const name = req.body.name;
     const pass = req.body.pass;
 
@@ -413,12 +438,14 @@ app.post('api/login', function(req, res)
 				// logged in!
 				result = {"loggedIn":true};
 				res.send(result);
+				return true;
 			}
 			else
 			{
 				// wrong password
 				result = {"loggedIn":false,"err":0};
 				res.send(result);
+				return false;
 			}
 		}
 	}
@@ -426,6 +453,7 @@ app.post('api/login', function(req, res)
 	// user not found
 	result = {"loggedIn":false,"err":1};
 	res.send(result);
+	return false;
 });
 
 // JSON Functions
@@ -467,12 +495,11 @@ const superadminJSON = (name) =>
 };
 
 // New Group
-const groupJSON = (group,owner) =>
+const groupJSON = (group) =>
 {
 	json = 
 	{
 		"group":group,
-		"admins":[owner],
 		"rooms":[roomJSON("general")]
 	};
 	
@@ -485,6 +512,7 @@ const roomJSON = (room) =>
 	json = 
 	{
 		"room":room,
+		"blocked":[],
 		"log":[]
 	};
 	
@@ -656,7 +684,7 @@ const demoteGroupAdmin = (user) =>
 
 // Group Handling
 
-const createGroup = (group,owner) =>
+const createGroup = (group) =>
 {
 	if(group.indexOf(' ') > -1)
 	{
@@ -671,7 +699,7 @@ const createGroup = (group,owner) =>
 		}
 	}
 	
-	groups.push(groupJSON(group,owner));
+	groups.push(groupJSON(group));
 	
 	writeJSON(groupDIR,groups);
 	
@@ -750,5 +778,27 @@ const deleteRoom = (room,group) =>
 	
 	return false;
 };
+
+const blockUser = (group,room,user) =>
+{
+	for(var i = 0; i < groups.length; i++)
+	{
+		if(groups[i]["group"]==group)
+		{
+			for(var j = 0; j < groups[i].rooms.length; j++)
+			{
+				if(groups[i].rooms[j].room == room)
+				{
+					groups[i].rooms.splice(j,1);
+					writeJSON(groupDIR,groups);
+					return true;
+				}
+			}
+			break;
+		}
+	}
+	
+	return false;
+}
 
 // Main Process

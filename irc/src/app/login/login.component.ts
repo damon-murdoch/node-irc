@@ -14,7 +14,19 @@ export class LoginComponent implements OnInit {
 	constructor(private _userService:UserService) {}
 
 	ngOnInit() {}
-
+	
+	handleLogin(name,pass,data)
+	{
+		if(data.loggedIn)
+		{
+			this._userService.setLocalStorage(name,pass);
+		}
+		else
+		{
+			localStorage.clear();
+		}
+	}
+	
 	loginUser(name,pass)
 	{
 		let user =
@@ -22,11 +34,9 @@ export class LoginComponent implements OnInit {
 			name:name,
 			pass:pass
 		}
-		
+
 		this._userService.loginUser(user).subscribe(
-			data => console.log(data),
-			err => console.log(err),
-			() => console.log('Logged in user')
+			data => this.handleLogin(name,pass,data)
 		);
-	}
+	}	
 }

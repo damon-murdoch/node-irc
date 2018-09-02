@@ -1,28 +1,23 @@
-<!--<!DOCTYPE html>-->
-<html>
-	<head>
-		<title> Generic IRC Chat Name </title>
-	</head>
-	<body>
-		<h1 class="t1"> 
-			Generic IRC Chat Name
-		</h1>
-		<h2 class="h2">
-			Register 
-		</h2>
-		<div id="logindiv">
-			<label text="Username"> Username </label>
-			<input type="text" id = "name" name = "name">
+<div id="logindiv">
+	<h3>
+		Registration Page 
+	</h3>
+	
+	<p> 
+		Have an account? login <a routerLink="/register" routerLinkActive="active">here</a>
+	</p>
+	
+	<form (submit)="createUser(name,mail,pass)">
+		
+		<label text="Username"> Username </label>
+		<input [(ngModel)]="name" type="text" placeholder="Username" id="name" name="name">
+		
+		<label text="Email"> Email </label>
+		<input [(ngModel)]="mail" type="text" placeholder="Email Address" id="mail" name="mail">
+		
+		<label text="Password"> Password </label>
+		<input [(ngModel)]="pass" type="password" placeholder="Password" id="pass" name="pass">
 			
-			<label text="Email"> Email </label>
-			<input type="text" id = "mail" name = "mail">
-			
-			<label text="Password"> Password </label>
-			<input type="password" id = "pass" name = "pass">
-			
-			<button type="submit" id="submit">Register</button>
-		</div>
-		<div id="errordiv"> 
-		</div>
-	</body>
-</html>
+		<button type="submit" id="submit">Register</button>
+	</form>
+</div>

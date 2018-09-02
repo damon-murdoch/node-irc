@@ -9,13 +9,17 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegisterComponent } from './register/register.component';
 
 import {HttpClientModule } from '@angular/common/http';
+import { SuperadmintoolbarComponent } from './superadmintoolbar/superadmintoolbar.component';
+import { GroupadmintoolbarComponent } from './groupadmintoolbar/groupadmintoolbar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     DashboardComponent,
-    RegisterComponent
+    RegisterComponent,
+    SuperadmintoolbarComponent,
+    GroupadmintoolbarComponent
   ],
   imports: [
     BrowserModule,

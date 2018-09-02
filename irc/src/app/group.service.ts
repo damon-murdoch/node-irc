@@ -25,9 +25,4 @@ export class GroupService {
 		let body = JSON.stringify(group);
 		return this.http.post('http://localhost/1337/api/deletegroup',body,httpOptions);
 	}
-	
-	getGroups(): Observable<Group[]> 
-	{
-		return this.http.get<Group[]>('http://localhost:1337/api/groups');
-	}
 }
