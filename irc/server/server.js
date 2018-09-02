@@ -71,6 +71,29 @@ app.get('/*',function(req,res)
 
 // Page Actions (post)
 
+app.post('/api/deluser',function(req,res)
+{
+	console.log("request to /api/deluser");
+	
+	var response = {
+		"success":false,
+		"err":""
+	};
+	
+	const name = req.body.name;
+	
+	if(deleteUser(name))
+	{
+		response.success = true;
+		res.send(response);
+	}
+	else
+	{
+		response.err = "User with this name does not exist!";
+		res.send(response);
+	}
+});
+
 app.post('/api/register',function(req,res)
 {
 	
@@ -97,7 +120,7 @@ app.post('/api/register',function(req,res)
 	}
 });
 
-app.post('/api/block',function(req,res)
+app.post('/api/rmadd',function(req,res)
 {
 	console.log("request to /api/block");
 	
@@ -111,19 +134,45 @@ app.post('/api/block',function(req,res)
 		"err":""
 	};
 	
-	if(blockUser(name,room,group))
+	if(addUserToGroup(name,room,group))
 	{
 		response.success = true;
 		res.send(response);
 	}
 	else
 	{
-		response.err = "User does not exist / user is already blocked";
+		response.err = "User does not exist / user is already in group";
 		res.send(response);
 	}
 });
 
-app.post('/api/group',function(req,res)
+app.post('/api/rmrmv',function(req,res)
+{
+	console.log("request to /api/block");
+	
+	const name = req.body.name;
+	const group = req.body.group;
+	const room = req.body.room;
+	
+	var response = 
+	{
+		"success":false,
+		"err":""
+	};
+	
+	if(rmvUserFromGroup(name,room,group))
+	{
+		response.success = true;
+		res.send(response);
+	}
+	else
+	{
+		response.err = "User does not exist / user is not in group";
+		res.send(response);
+	}
+});
+
+app.post('/api/getgroup',function(req,res)
 {
 	
 	console.log("request to /api/group");
@@ -145,24 +194,33 @@ app.post('/api/group',function(req,res)
 		}
 	}
 	
-	for(var i = 0; i < groups.length; i++)
+	if(!response.admin)
 	{
-		if (groups[i]["group"]==group)
+		for(var i = 0; i < groupadmins.length; i++)
 		{
-			if(!response.admin)
+			if(groupadmins[i].name == name)
 			{
-				for(var j = 0; j < groups[i].admins.length; j++)
-				{
-					if (groups[i]["group"].admins[j] == name)
-					{
-						response.admin = true;
-						break;
-					}
-				}
+				response.admin - true;
 			}
-			response.rooms = groups[i].rooms;
 		}
 	}
+	if(response.admin)
+	{
+		for(var i = 0; i < groups.length; i++)
+		{
+			if (groups[i]["group"]==group)
+			{
+				if(!response.admin)
+				{
+					
+				}
+				else
+					response.rooms = groups[i].rooms;
+				}
+			}
+		}
+	}
+
 	res.send(response);
 });
 
@@ -384,7 +442,6 @@ app.post('/api/room',function(req,res)
 {
 	console.log("request to /api/room");
 	
-	const name = req.body.name;
 	const group = req.body.group;
 	const room = req.body.room;
 	
@@ -494,6 +551,55 @@ app.post('/api/login', function(req, res)
 	return false;
 });
 
+
+app.post('/api/groupadd',function(req,res)
+{
+	console.log("request to /api/groupadd");
+	
+	const name = req.body.name;
+	const group = req.body.group;
+	
+	response = {
+		"success":false,
+		"err":""
+	};
+	
+	if(addUserToGroup(name,group))
+	{
+		response.success = true;
+		res.send(response);
+	}
+	else
+	{
+		response.err = "User with this name / email already exists!";
+		res.send(response);
+	}
+});
+
+app.post('/api/grouprmv',function(req,res)
+{
+	console.log("request to /api/grouprmv");
+	
+	const name = req.body.name;
+	const group = req.body.group;
+	
+	response = {
+		"success":false,
+		"err":""
+	};
+	
+	if(rmvUserFromGroup(name,group))
+	{
+		response.success = true;
+		res.send(response);
+	}
+	else
+	{
+		response.err = "User with this name / email already exists!";
+		res.send(response);
+	}
+});
+
 // JSON Functions
 
 const writeJSON = (filepath,obj) =>
@@ -515,7 +621,7 @@ const userJSON = (name,mail,pass) =>
 		"mail":mail,
 		"pass":pass,
 		"salt":null,
-		"groups":["lobby"]
+		"groups":[{group:"lobby",rooms:['general']}]
 	};
 	
 	return json;
@@ -550,7 +656,6 @@ const roomJSON = (room) =>
 	json = 
 	{
 		"room":room,
-		"blocked":[],
 		"log":[]
 	};
 	
@@ -760,6 +865,38 @@ const deleteGroup = (group) =>
 	return false;
 };
 
+const addUserToGroup = (name,group) =>
+{
+	for(var i = 0; i < users.length; i++)
+	{
+		for(var j = 0; j < users[i].groups.length; j++)
+		{
+			if(users[i].groups[j].group == group)
+			{
+				return false;
+			}
+		}
+		users[i].groups.push({group:group,rooms:[]});
+		return true;
+	}
+};
+
+const rmvUserFromGroup = (name,group) =>
+{
+	for(var i = 0; i < users.length; i++)
+	{
+		for(var j = 0; j < users[i].groups.length; j++)
+		{
+			if(users[i].groups[j].group == group)
+			{
+				users[i].groups.splice(j,1);
+				return true;
+			}
+		}
+		return false;
+	}
+};
+
 // Room Handling
 
 const createRoom = (room,group) =>
@@ -817,34 +954,77 @@ const deleteRoom = (room,group) =>
 	return false;
 };
 
-const blockUser = (name,room,group) =>
+const addUserToRoom = (name,room,group) =>
 {
-	for(var i = 0; i < groups.length; i++)
+	for(var i = 0; i < users.length; i++)
 	{
-		if(groups[i]["group"]==group)
+		for(var j = 0; j < users[i].groups.length; j++)
 		{
-			for(var j = 0; j < groups[i].rooms.length; j++)
+			for(var k = 0; k < users[i].groups[j].rooms.length; k++)
 			{
-				if(groups[i].rooms[j].room == room)
+				if(users[i].groups[j].rooms[k] == room)
 				{
-					for(var k = 0; k < groups[i].rooms[j].blocked.length; k++)
-					{
-						if(name == groups[i].rooms[j].blocked[k])
-						{
-							return false;
-						}
-					}
-					
-					groups[i].rooms[j].blocked.push(name);
-					
-					writeJSON(groupDIR,groups);
-					
+					return false;
+				}
+			}
+			users[i].groups[j].rooms.push(room);
+			writeJSON(userDIR,users);
+			return true;
+		}
+	}
+};
+
+const rmvUserFromRoom = (name,room,group) =>
+{
+	for(var i = 0; i < users.length; i++)
+	{
+		for(var j = 0; j < users[i].groups.length; j++)
+		{
+			for(var k = 0; k < users[i].groups[j].rooms.length; k++)
+			{
+				if(users[i].groups[j].rooms[k] == room)
+				{
+					users[i].groups[j].splice(k,1);
+					writeJSON(userDIR,users);
 					return true;
 				}
 			}
-			break;
+			return false;
 		}
 	}
+};
+
+const deleteUser = (name) =>
+{
+	for(var i = 0; i < superadmins.length; i++)
+	{
+		if(users[i].name == name)
+		{
+			superadmins.splice(i,1);
+			writeJSON(superadminDIR,superadmins);
+		}
+	}
+	
+	for(var i = 0; i < groupadmins.length; i++)
+	{
+		if(users[i].name == name)
+		{
+			groupadmins.splice(i,1);
+			writeJSON(groupadminDIR,groupadmins);
+		}
+	}
+	
+	
+	for(var i = 0; i < users.length; i++)
+	{
+		if(users[i].name == name)
+		{
+			users.splice(i,1);
+			writeJSON(userDIR,users);
+			return true;
+		}
+	}
+
 	return false;
 };
 

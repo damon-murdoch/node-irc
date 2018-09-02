@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "group": "lobby",
+    "rooms": [
+      {
+        "room": "general",
+        "users": [],
+        "log": []
+      }
+    ]
+  }
+]

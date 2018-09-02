@@ -13,6 +13,16 @@
 		<app-groupadmintoolbar></app-groupadmintoolbar>
 	</div>
 	
+	<div id="grpdiv">
+		<h4> Groups </h4>
+		<div *ngFor="let group of groups">
+			<a (click) = getGroupData(group)>{{group}}</a>
+		</div>
+		<div id="activegroup"> 
+			
+		</div>
+	</div>
+	
 	<div id="logoutdiv"> 
 		<a href="#" (click)="logout()"> Log Out </a>
 	</div>

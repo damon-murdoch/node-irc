@@ -7,48 +7,17 @@
     "groups": []
   },
   {
-    "name": "yeet",
-    "mail": "yeet",
-    "pass": "yeet",
+    "name": "noobslayer420",
+    "mail": "kush@yeet.com",
+    "pass": "die",
     "salt": null,
-    "groups": [
-      "lobby"
-    ]
+    "groups": []
   },
   {
     "name": "Damon",
     "mail": "damonmurdoch1@gmail.com",
-    "pass": "fuck",
-    "salt": null,
-    "groups": [
-      "lobby"
-    ]
-  },
-  {
-    "name": "dm1",
-    "mail": "23",
-    "pass": "123",
-    "salt": null,
-    "groups": [
-      "lobby"
-    ]
-  },
-  {
-    "name": "yet",
-    "mail": "yote",
-    "pass": "meme",
-    "salt": null,
-    "groups": [
-      "lobby"
-    ]
-  },
-  {
-    "name": "Damontest",
-    "mail": "teastagainlol",
     "pass": "yeet",
     "salt": null,
-    "groups": [
-      "lobby"
-    ]
+    "groups": []
   }
 ]

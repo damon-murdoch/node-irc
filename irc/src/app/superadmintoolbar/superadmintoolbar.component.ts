@@ -13,36 +13,10 @@ export class SuperadmintoolbarComponent implements OnInit {
 	
 	hide:boolean;
 	
+	hidemsg:string;
 	errormsg:string;
 	
 	constructor(private _userService:UserService,private router: Router) { }
-
-	createUser(name,mail,pass,salt)
-	{
-		let user = 
-		{
-			name:name,
-			mail:mail,
-			pass:pass,
-			salt:null
-		};
-		
-		this._userService.createUser(user).subscribe(
-			data => 
-			{
-				if(data["success"])
-				{
-					this.errormsg = "Successfully registered user!";
-					console.log("Successfully registered user!");
-				}
-				else
-				{
-					this.errormsg = data["err"];
-					console.log("Error: "+data["err"]);
-				}
-			}
-		);
-	}
 	
 	promoteUser(name)
 	{
@@ -90,34 +64,35 @@ export class SuperadmintoolbarComponent implements OnInit {
 		);
 	}
 	
+	deleteUser(name)
+	{
+		let user = 
+		{
+			name:name
+		}
+		this._userService.deleteUser(user).subscribe(
+			data => 
+			{
+				if(data["success"])
+				{
+					this.errormsg = "Successfully deleted user!";
+				}
+				else
+				{
+					this.errormsg = data["err"];
+				}
+			}
+		);
+	}
+	
+	hideToggle()
+	{
+		this.hide = !this.hide;
+		this.hidemsg = "hide";
+	}
+	
 	ngOnInit(){
 		this.hide=true;
+		this.hidemsg="unhide";
 	}
 }
-
-/*
-<form (submit)="createUser(name,mail,pass)">
-	<label text="Username"> Username </label>
-	<input [(ngModel)]="crname" type="text" placeholder="Username" id="crname" name="crname">
-	
-	<label text="Email"> Email </label>
-	<input [(ngModel)]="crmail" type="text" placeholder="Email Address" id="crmail" name="crmail">
-	
-	<label text="Password"> Password </label>
-	<input [(ngModel)]="crpass" type="password" placeholder="Password" id="crpass" name="crpass">
-		
-	<button type="submit" id="submit">Register</button>
-</form>
-
-<form (submit) = "promoteUser(prname)" >
-	<label text="Username"> Username </label>
-	<input [(ngModel)]="prname" type="text" placeholder="Username" id="prname" name="prname">
-	<button type="submit" id="submit">Register</button>
-</form>
-
-<form (submit) = "demoteUser(dmname)" >
-	<label text="Username"> Username </label>
-	<input [(ngModel)]="dmname" type="text" placeholder="Username" id="dmname" name="dmname">
-	<button type="submit" id="submit">Register</button>
-</form>
-*/

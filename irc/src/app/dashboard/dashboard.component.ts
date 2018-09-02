@@ -27,6 +27,21 @@ export class DashboardComponent implements OnInit {
 
 	constructor(private _userService:UserService,  private _dataService:DataService, private router: Router) { }
 
+	getGroupData(group)
+	{
+		let data = 
+		{
+			name:name,
+			group:group
+		}
+		this._dataService.getGroupData(data).subscribe(
+			data =>
+			{
+				
+			}
+		);
+	}
+	
 	ngOnInit()
 	{
 		
@@ -43,6 +58,7 @@ export class DashboardComponent implements OnInit {
 		this._dataService.getData(data).subscribe(
 			data =>
 			{
+				this.name = localStorage["name"];
 				this.rank = data["rank"];
 				this.groups = data["groups"];
 				

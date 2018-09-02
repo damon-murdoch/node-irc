@@ -26,6 +26,12 @@ export class UserService {
 		return this.http.post('http://127.0.0.1:1337/api/login',body,httpOptions);
 	}
 	
+	deleteUser(user)
+	{
+		let body = JSON.stringify(user);
+		return this.http.post('http://127.0.0.1:1337/api/deluser',body,httpOptions);
+	}
+	
 	createUser(user)
 	{
 		let body = JSON.stringify(user);

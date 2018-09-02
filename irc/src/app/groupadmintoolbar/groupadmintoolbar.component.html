@@ -1,22 +1,39 @@
-<a href="#" (click) = "hideToggle()">{{hidemsg}}</a>
-
+<div>
+	<a class = "hidetoggle" (click) = "hideToggle()">[{{hidemsg}} group admin dashboard]</a>
+</div>
 <div [hidden]=hide id="groupadmintoolbar" class="toolbar">
 
 	<h3> Group Administrator Toolbar </h3>
 	
+	<form (submit)="createUser(crname,crmail,crpass)" class="toolbaritem">
+		<h4> Create User </h4>
+	
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="crname" type="text" placeholder="Username" id="crname" name="crname">
+		</div>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="crmail" type="text" placeholder="Email Address" id="crmail" name="crmail">
+		</div>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="crpass" type="password" placeholder="Password" id="crpass" name="crpass">
+		</div>
+		
+		<button type="submit" id="crusubmit">Register</button>
+	</form>
 	
 	<form (submit)="createGroup(crgrp)" class="toolbaritem">
 		
 		<h4> Create Group </h4>
 		
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="crgrp" type="text" placeholder="Room Name" id="crgrp" name="crgrp">
+			<input class="form-control" [(ngModel)]="crgrp" type="text" placeholder="Group Name" id="crgrp" name="crgrp">
 		</div>
 		
 		<button type="submit" id="crgsubmit">Create</button>
 		
 	</form>
-	
 	
 	<form (submit)="deleteGroup(dlgrp)" class="toolbaritem">
 		
@@ -30,18 +47,48 @@
 		
 	</form>
 
+	<form (submit)="addUserToGroup(autname,autgrp)" class="toolbaritem">
+		
+		<h4> Add User To Group </h4>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="autname" type="text" placeholder="User Name" id="autname" name="autname">
+		</div>
 	
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="autgrp" type="text" placeholder="Group Name" id="autgrp" name="autgrp">
+		</div>
+		
+		<button type="submit" id="autsubmit">Delete</button>
+		
+	</form>
 	
-	<form (submit)="createRoom(crrmgrp,crrm)" class="toolbaritem">
+	<form (submit)="rmvUserFromGroup(rutname,rutmgrp)" class="toolbaritem">
+		
+		<h4> Remove User From Group </h4>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="rutname" type="text" placeholder="User Name" id="rutname" name="rutname">
+		</div>
+	
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="rutmgrp" type="text" placeholder="Group Name" id="rutgrp" name="rutgrp">
+		</div>
+		
+		<button type="submit" id="rutsubmit">Delete</button>
+		
+	</form>
+	
+	<form (submit)="createRoom(crrmgrp,crrrm)" class="toolbaritem">
 		
 		<h4> Create Room </h4>
 		
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="crrmgrp" type="text" placeholder="Group Name" id="rmgrp" name="rmgrp">
+			<input class="form-control" [(ngModel)]="crrmgrp" type="text" placeholder="Group Name" id="crrmgrp" name="crrmgrp">
 		</div>
 		
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="crrm" type="text" placeholder="Room Name" id="crrm" name="crrm">
+			<input class="form-control" [(ngModel)]="crrrm" type="text" placeholder="Room Name" id="crrrm" name="crrrm">
 		</div>
 		
 		<button type="submit" id="crmsubmit">Create</button>
@@ -55,11 +102,11 @@
 		<h4> Delete Room </h4>
 		
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="dlrmgrp" type="text" placeholder="Group Name" id="rmgrp" name="rmgrp">
+			<input class="form-control" [(ngModel)]="dlrmgrp" type="text" placeholder="Group Name" id="dlrmgrp" name="dlrmgrp">
 		</div>
 		
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="dlrm" type="text" placeholder="Room Name" id="crrm" name="crrm">
+			<input class="form-control" [(ngModel)]="dlrm" type="text" placeholder="Room Name" id="dlrm" name="dlrm">
 		</div>
 		
 		<button type="submit" id="drmsubmit">Delete</button>
@@ -82,7 +129,7 @@
 			<input class="form-control" [(ngModel)]="dlrm" type="text" placeholder="Room Name" id="crrm" name="crrm">
 		</div>
 		
-		<button type="submit" id="drmsubmit">Block</button>
+		<button type="submit" id="blusubmit">Block</button>
 	
 	</form>
 </div>
