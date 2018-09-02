@@ -38,6 +38,14 @@ app.use(bodyParser.json());
 
 const http = require('http').Server(app);
 
+const cors = require('cors');
+
+var corsOptions= 
+{
+	origin:"http://localhost:1337",
+	optionsSuccessStatus: 200
+}
+
 // Server Connection Information
 const host = '127.0.0.1';
 
@@ -73,7 +81,7 @@ app.get('/register',function(req,res)
 
 // Page Actions (post)
 
-app.post('/regpost',function(req,res)
+app.post('api/register',function(req,res)
 {
 	var response = {
 		"success":false,
@@ -96,7 +104,7 @@ app.post('/regpost',function(req,res)
 	}
 });
 
-app.post('/group',function(req,res)
+app.post('api/group',function(req,res)
 {
 	const name = req.body.name;
 	const group = req.body.group;
@@ -136,7 +144,7 @@ app.post('/group',function(req,res)
 	res.send(response);
 });
 
-app.post('/superpromote',function(req,res)
+app.post('api/superpromote',function(req,res)
 {
 	const name = req.body.name;
 	
@@ -157,7 +165,7 @@ app.post('/superpromote',function(req,res)
 	}
 });
 
-app.post('/superdemote',function(req,res)
+app.post('api/superdemote',function(req,res)
 {
 	const name = req.body.name;
 	
@@ -178,7 +186,49 @@ app.post('/superdemote',function(req,res)
 	}
 });
 
-app.post('/creategroup',function(req,res)
+app.post('api/grouppromote',function(req,res)
+{
+	const name = req.body.name;
+	
+	response = {
+		"success":false,
+		"err":""
+	};
+	
+	if(promoteSuperAdmin(name))
+	{
+		response.success = true;
+		res.send(response);
+	}
+	else
+	{
+		response.err = "User '"+name+"' does not exist or is already super admin.";
+		res.send(response);
+	}
+});
+
+app.post('api/groupdemote',function(req,res)
+{
+	const name = req.body.name;
+	
+	response = {
+		"success":false,
+		"err":""
+	};
+	
+	if(demoteSuperAdmin(name))
+	{
+		response.success = true;
+		res.send(response);
+	}
+	else
+	{
+		response.err = "User '"+name+"' does not exist or is not super admin.";
+		res.send(response);
+	}
+});
+
+app.post('api/creategroup',function(req,res)
 {
 	const group = req.body.group;
 	const owner = req.body.name;
@@ -208,7 +258,7 @@ app.post('/creategroup',function(req,res)
 	}	
 });
 
-app.post('/deletegroup',function(req,res)
+app.post('api/deletegroup',function(req,res)
 {
 	const group = req.body.group;
 	
@@ -241,7 +291,7 @@ app.post('/deletegroup',function(req,res)
 	}
 });
 
-app.post('/createroom',function(req,res)
+app.post('api/createroom',function(req,res)
 {
 	const group = req.body.group;
 	const room = req.body.room;
@@ -263,7 +313,7 @@ app.post('/createroom',function(req,res)
 	}	
 });
 
-app.post('/deleteroom',function(req,res)
+app.post('api/deleteroom',function(req,res)
 {
 	const group = req.body.group;
 	const room = req.body.room;
@@ -285,7 +335,7 @@ app.post('/deleteroom',function(req,res)
 	}
 });
 
-app.post('/room',function(req,res)
+app.post('api/room',function(req,res)
 {
 	const name = req.body.name;
 	const group = req.body.group;
@@ -309,7 +359,7 @@ app.post('/room',function(req,res)
 	res.send(response);
 });
 
-app.post('/data',function(req,res)
+app.post('api/data',function(req,res)
 {
 	const name = req.body.name;
 	
@@ -349,7 +399,7 @@ app.post('/data',function(req,res)
 	res.send(response);
 });
 
-app.post('/login', function(req, res)
+app.post('api/login', function(req, res)
 {	
     const name = req.body.name;
     const pass = req.body.pass;
@@ -574,45 +624,31 @@ const demoteSuperAdmin = (user) =>
 
 // Group Admins
 
-const promoteGroupAdmin = (user,group) =>
+const promoteGroupAdmin = (user) =>
 {
-	for(var i = 0; i < groups.length; i++)
+	for(var j = 0; j < groupadmins.length; j++)
 	{
-		if (groups[i]["group"] == group)
+		if(groupadmins[j] == name)
 		{
-			for(var j = 0; j < groups[i].admins.length; j++)
-			{
-				if(groups[i].admins[j] == name)
-				{
-					return false;
-				}
-			}
-			groups[i].admins.append(name);
-			break;
+			return false;
 		}
 	}
+	groupadmins.push(user);
 	
-	writeJSON(groupDIR,groups);
+	writeJSON(groupadminDIR,groupadmins);
 	
 	return true;
 };
 
-const demoteGroupAdmin = (caller,user,group) =>
+const demoteGroupAdmin = (user) =>
 {
-	for(var i = 0; i < groups.length; i++)
+	for(var j = 0; j < groupadmins.length; j++)
 	{
-		if (groups[i]["group"] == group)
+		if(groupadmins[j] == name)
 		{
-			for(var j = 0; j < groups[i].admins.length; j++)
-			{
-				if(groups[i].admins[j] == name)
-				{
-					groups[i].admins.splice(j,1);
-					writeJSON(groupDIR,groups);
-					return true;
-				}
-			}
-			break;
+			groupadmins[i].splice(j,1);
+			writeJSON(groupadminDIR,groupadmins);
+			return true;
 		}
 	}
 	return false;
