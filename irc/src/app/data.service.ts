@@ -14,6 +14,30 @@ export class DataService {
 
 constructor(private http:HttpClient) { }
   
+    addUserToGroup(data)
+	{
+		let body = JSON.stringify(data);
+		return this.http.post('http://127.0.0.1:1337/api/data',body,httpOptions);
+	}
+	
+	rmvUserFromGroup(data)
+	{
+		let body = JSON.stringify(data);
+		return this.http.post('http://127.0.0.1:1337/api/groupadd',body,httpOptions);
+	}
+	
+	addUserToRoom(data)
+	{
+		let body = JSON.stringify(data);
+		return this.http.post('http://127.0.0.1:1337/api/grouprmv',body,httpOptions);
+	}
+	
+	rmvUserFromRoom(data)
+	{
+		let body = JSON.stringify(data);
+		return this.http.post('http://127.0.0.1:1337/api/rmrmv',body,httpOptions);
+	}
+  
 	getData(data)
 	{
 		let body = JSON.stringify(data);

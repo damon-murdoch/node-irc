@@ -131,20 +131,86 @@ export class GroupadmintoolbarComponent implements OnInit {
 		);
 	}
 	
-	blockUser(name,group,room)
+	addUserToGroup(name,group)
 	{
-		let data =
+		let data = 
+		{
+			name:name,
+			group:group
+		}
+		this._dataService.addUserToGroup(data).subscribe(
+			data => 
+			{
+				if(data["success"])
+				{
+					this.errormsg = "Successfully added user!";
+				}
+				else
+				{
+					this.errormsg = data["err"];
+				}
+			}
+		);
+	}
+	
+	rmvUserFromGroup(name,group)
+	{
+		let data = 
+		{
+			name:name,
+			group:group
+		}
+		this._dataService.rmvUserFromGroup(data).subscribe(
+			data => 
+			{
+				if(data["success"])
+				{
+					this.errormsg = "Successfully removed user!";
+				}
+				else
+				{
+					this.errormsg = data["err"];
+				}
+			}
+		);
+	}
+	
+	addUserToRoom(name,group,room)
+	{
+		let data = 
 		{
 			name:name,
 			group:group,
 			room:room
 		}
-		this._userService.blockUser(data).subscribe(
+		this._dataService.addUserToRoom(data).subscribe(
 			data => 
 			{
 				if(data["success"])
 				{
-					this.errormsg = "Successfully blocked user!";
+					this.errormsg = "Successfully added user to room!";
+				}
+				else
+				{
+					this.errormsg = data["err"];
+				}
+			}
+		);
+	}
+	
+	rmvUserFromRoom(name,group)
+	{
+		let data = 
+		{
+			name:name,
+			group:group
+		}
+		this._dataService.deleteRoom(data).subscribe(
+			data => 
+			{
+				if(data["success"])
+				{
+					this.errormsg = "Successfully removed user from room!";
 				}
 				else
 				{

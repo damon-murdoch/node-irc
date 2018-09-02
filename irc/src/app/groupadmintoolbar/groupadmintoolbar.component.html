@@ -95,8 +95,6 @@
 		
 	</form>
 	
-	
-	
 	<form (submit)="deleteRoom(dlrmgrp,dlrm)" class="toolbaritem">
 		
 		<h4> Delete Room </h4>
@@ -113,24 +111,45 @@
 		
 	</form>
 	
-	<h4> Block User </h4>
 	
-	<form (submit)="blockUser(name,dlrmgrp,dlrm)" class="toolbaritem">
-	
+	<form (submit)="addUserToRoom(autname,autroom,autgrp)" class="toolbaritem">
+		
+		<h4> Add User To Group </h4>
+		
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="name" type="text" placeholder="User Name" id="blname" name="blname">
-		</div>
-	
-		<div class="form-group">
-			<input class="form-control" [(ngModel)]="dlrmgrp" type="text" placeholder="Group Name" id="rmgrp" name="rmgrp">
+			<input class="form-control" [(ngModel)]="autname" type="text" placeholder="User Name" id="autname" name="autname">
 		</div>
 		
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="dlrm" type="text" placeholder="Room Name" id="crrm" name="crrm">
+			<input class="form-control" [(ngModel)]="dlrm" type="text" placeholder="Room Name" id="dlrm" name="dlrm">
+		</div>
+	
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="autgrp" type="text" placeholder="Group Name" id="autgrp" name="autgrp">
 		</div>
 		
-		<button type="submit" id="blusubmit">Block</button>
+		<button type="submit" id="autsubmit">Delete</button>
+		
+	</form>
 	
+	<form (submit)="rmvUserFromRoom(rutname,rutroom,rutmgrp)" class="toolbaritem">
+		
+		<h4> Remove User From Group </h4>
+		
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="rutname" type="text" placeholder="User Name" id="rutname" name="rutname">
+		</div>
+
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="dlrm" type="text" placeholder="Room Name" id="dlrm" name="dlrm">
+		</div>
+	
+		<div class="form-group">
+			<input class="form-control" [(ngModel)]="rutmgrp" type="text" placeholder="Group Name" id="rutgrp" name="rutgrp">
+		</div>
+		
+		<button type="submit" id="rutsubmit">Delete</button>
+		
 	</form>
 </div>
 <div id="gaErrmsg">
