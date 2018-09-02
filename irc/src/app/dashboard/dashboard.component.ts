@@ -38,6 +38,8 @@ export class DashboardComponent implements OnInit {
 		this.selectedgroup = group;
 		this.selectedgroupbool = true;
 		
+		console.log("No functionality yet.");
+		
 		let data = 
 		{
 			name:this.name,
@@ -56,6 +58,10 @@ export class DashboardComponent implements OnInit {
 		this.selectedroom = room;
 		this.selectedroombool = true;
 		
+		console.log("No chat functionality yet.");
+		
+		/*
+		
 		let data = 
 		{
 			name:this.name,
@@ -69,6 +75,7 @@ export class DashboardComponent implements OnInit {
 				//this.messages = data;
 			}
 		);
+		*/
 	}
 	
 	ngOnInit()

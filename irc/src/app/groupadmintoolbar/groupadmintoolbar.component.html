@@ -112,43 +112,43 @@
 	</form>
 	
 	
-	<form (submit)="addUserToRoom(autname,autroom,autgrp)" class="toolbaritem">
+	<form (submit)="addUserToRoom(autbname,autbroom,autbgrp)" class="toolbaritem">
 		
 		<h4> Add User To Group </h4>
 		
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="autname" type="text" placeholder="User Name" id="autname" name="autname">
+			<input class="form-control" [(ngModel)]="autbname" type="text" placeholder="User Name" id="autbname" name="autbname">
 		</div>
 		
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="dlrm" type="text" placeholder="Room Name" id="dlrm" name="dlrm">
+			<input class="form-control" [(ngModel)]="autbroom" type="text" placeholder="Room Name" id="autbroom" name="autbroom">
 		</div>
 	
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="autgrp" type="text" placeholder="Group Name" id="autgrp" name="autgrp">
+			<input class="form-control" [(ngModel)]="autbgrp" type="text" placeholder="Group Name" id="autbgrp" name="autbgrp">
 		</div>
 		
-		<button type="submit" id="autsubmit">Delete</button>
+		<button type="submit" id="autbsubmit">Delete</button>
 		
 	</form>
 	
-	<form (submit)="rmvUserFromRoom(rutname,rutroom,rutmgrp)" class="toolbaritem">
+	<form (submit)="rmvUserFromRoom(rutbname,rutbroom,rutbmgrp)" class="toolbaritem">
 		
 		<h4> Remove User From Group </h4>
 		
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="rutname" type="text" placeholder="User Name" id="rutname" name="rutname">
+			<input class="form-control" [(ngModel)]="rutbname" type="text" placeholder="User Name" id="rutbname" name="rutbname">
 		</div>
 
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="dlrm" type="text" placeholder="Room Name" id="dlrm" name="dlrm">
+			<input class="form-control" [(ngModel)]="rutbroom" type="text" placeholder="Room Name" id="rutbroom" name="rutbroom">
 		</div>
 	
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="rutmgrp" type="text" placeholder="Group Name" id="rutgrp" name="rutgrp">
+			<input class="form-control" [(ngModel)]="rutbmgrp" type="text" placeholder="Group Name" id="rutbgrp" name="rutbgrp">
 		</div>
 		
-		<button type="submit" id="rutsubmit">Delete</button>
+		<button type="submit" id="rutbsubmit">Delete</button>
 		
 	</form>
 </div>

@@ -52,6 +52,7 @@ constructor(private http:HttpClient) { }
 	  
 	getRoomData(data)
 	{
+		console.log("No functionality yet.");
 		let body = JSON.stringify(data);
 		return this.http.post('http://127.0.0.1:1337/api/getroom',body,httpOptions);
 	}
