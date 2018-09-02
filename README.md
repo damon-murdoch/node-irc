@@ -182,7 +182,7 @@ Result: Creates a new room with name 'room' in group 'group' assuming the group 
 
 13.
 Target: /api/deleteroom\
-Arguments:
+Arguments:\
 group: string, name of group\
 room: string, name of room\
 Return:\
