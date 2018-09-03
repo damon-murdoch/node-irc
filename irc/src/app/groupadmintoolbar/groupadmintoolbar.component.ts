@@ -141,12 +141,18 @@ export class GroupadmintoolbarComponent implements OnInit {
 		this._dataService.addUserToGroup(data).subscribe(
 			data => 
 			{
+				console.log(name);
+				console.log(group);
+				console.log(data);
+				
 				if(data["success"])
 				{
+					console.log("Successfully added user!");
 					this.errormsg = "Successfully added user!";
 				}
 				else
 				{
+					console.log(data["err"]);
 					this.errormsg = data["err"];
 				}
 			}
@@ -165,10 +171,12 @@ export class GroupadmintoolbarComponent implements OnInit {
 			{
 				if(data["success"])
 				{
+					console.log("Successfully removed user!");
 					this.errormsg = "Successfully removed user!";
 				}
 				else
 				{
+					console.log(data["err"]);
 					this.errormsg = data["err"];
 				}
 			}
@@ -198,14 +206,15 @@ export class GroupadmintoolbarComponent implements OnInit {
 		);
 	}
 	
-	rmvUserFromRoom(name,group)
+	rmvUserFromRoom(name,group,room)
 	{
 		let data = 
 		{
 			name:name,
-			group:group
+			group:group,
+			room:room
 		}
-		this._dataService.deleteRoom(data).subscribe(
+		this._dataService.rmvUserFromRoom(data).subscribe(
 			data => 
 			{
 				if(data["success"])

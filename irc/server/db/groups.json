@@ -15,9 +15,18 @@
       {
         "room": "general",
         "log": []
+      }
+    ]
+  },
+  {
+    "group": "GoodGroup",
+    "rooms": [
+      {
+        "room": "general",
+        "log": []
       },
       {
-        "room": "important",
+        "room": "YeetRoom",
         "log": []
       }
     ]

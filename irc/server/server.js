@@ -89,7 +89,7 @@ app.post('/api/deluser',function(req,res)
 	}
 	else
 	{
-		response.err = "User with this name does not exist!";
+		response.err = "User with name " + name + " does not exist!";
 		res.send(response);
 	}
 });
@@ -115,14 +115,14 @@ app.post('/api/register',function(req,res)
 	}
 	else
 	{
-		response.err = "User with this name / email already exists!";
+		response.err = "User with this name " + name + " or email" + mail + "  already exists!";
 		res.send(response);
 	}
 });
 
 app.post('/api/rmadd',function(req,res)
 {
-	console.log("request to /api/block");
+	console.log("request to /api/rmadd");
 	
 	const name = req.body.name;
 	const group = req.body.group;
@@ -134,21 +134,21 @@ app.post('/api/rmadd',function(req,res)
 		"err":""
 	};
 	
-	if(addUserToGroup(name,room,group))
+	if(addUserToRoom(name,room,group))
 	{
 		response.success = true;
 		res.send(response);
 	}
 	else
 	{
-		response.err = "User does not exist / user is already in group";
+		response.err = "User "+name+" does not exist or user is already in group "+group+" ";
 		res.send(response);
 	}
 });
 
 app.post('/api/rmrmv',function(req,res)
 {
-	console.log("request to /api/block");
+	console.log("request to /api/rmrmv");
 	
 	const name = req.body.name;
 	const group = req.body.group;
@@ -160,7 +160,7 @@ app.post('/api/rmrmv',function(req,res)
 		"err":""
 	};
 	
-	if(rmvUserFromGroup(name,room,group))
+	if(rmvUserFromRoom(name,group,room))
 	{
 		response.success = true;
 		res.send(response);
@@ -359,7 +359,7 @@ app.post('/api/creategroup',function(req,res)
 	}
 	else
 	{
-		response.err = "Group '"+group+"' already exists.";
+		response.err = "Group '" + group + "' already exists.";
 		res.send(response);
 	}	
 });
@@ -395,7 +395,7 @@ app.post('/api/deletegroup',function(req,res)
 	}
 	else
 	{
-		response.err = "Group '"+group+"' does not exist.";
+		response.err = "Group '" + group + "' does not exist.";
 		res.send(response);
 	}
 });
@@ -420,7 +420,7 @@ app.post('/api/createroom',function(req,res)
 	}
 	else
 	{
-		response.err = "Group '"+group+"' already exists.";
+		response.err = "Group '" + group + "' already exists.";
 		res.send(response);
 	}	
 });
@@ -445,7 +445,7 @@ app.post('/api/deleteroom',function(req,res)
 	}
 	else
 	{
-		response.err = "Group '"+group+"' does not exist.";
+		response.err = "Room '" + room + "' does not exist.";
 		res.send(response);
 	}
 });
@@ -601,19 +601,20 @@ app.post('/api/grouprmv',function(req,res)
 	const name = req.body.name;
 	const group = req.body.group;
 	
-	response = {
+	response = 
+	{
 		"success":false,
 		"err":""
 	};
 	
-	if(rmvUserFromGroup(name,group))
+	if((name,group))
 	{
 		response.success = true;
 		res.send(response);
 	}
 	else
 	{
-		response.err = "User with this name / email already exists!";
+		response.err = "User doesn't exist, or is already not in group!";
 		res.send(response);
 	}
 });
@@ -887,15 +888,23 @@ const addUserToGroup = (name,group) =>
 {
 	for(var i = 0; i < users.length; i++)
 	{
-		for(var j = 0; j < users[i].groups.length; j++)
+		if(users[i].name == name)
 		{
-			if(users[i].groups[j].group == group)
+			for(var j = 0; j < users[i].groups.length; j++)
 			{
-				return false;
+				if(users[i].groups[j].group == group)
+				{
+					return false;
+				}
 			}
+			data = {
+				"group":group,
+				"rooms":[]
+			}
+			users[i].groups.push(data);
+			writeJSON(userDIR,users);
+			return true;
 		}
-		users[i].groups.push({group:group,rooms:[]});
-		return true;
 	}
 };
 
@@ -903,15 +912,19 @@ const rmvUserFromGroup = (name,group) =>
 {
 	for(var i = 0; i < users.length; i++)
 	{
-		for(var j = 0; j < users[i].groups.length; j++)
+		if(users[i].name == name)
 		{
-			if(users[i].groups[j].group == group)
+			for(var j = 0; j < users[i].groups.length; j++)
 			{
-				users[i].groups.splice(j,1);
-				return true;
+				if(users[i].groups[j].group == group)
+				{
+					users[i].groups.splice(j,1);
+					writeJSON(userDIR,users);
+					return true;
+				}
 			}
+			return false;
 		}
-		return false;
 	}
 };
 
@@ -933,9 +946,9 @@ const createRoom = (room,group) =>
 	{
 		if(groups[i]["group"]==group)
 		{
-			for(var j = 0; j < rooms.length; j++)
+			for(var j = 0; j < groups[i].rooms.length; j++)
 			{
-				if(groups[i]["rooms"][j] == room)
+				if(groups[i]["rooms"][j].room == room)
 				{
 					return false;
 				}
@@ -972,42 +985,57 @@ const deleteRoom = (room,group) =>
 	return false;
 };
 
-const addUserToRoom = (name,room,group) =>
+const addUserToRoom = (name,group,room) =>
 {
 	for(var i = 0; i < users.length; i++)
 	{
-		for(var j = 0; j < users[i].groups.length; j++)
+		if(users[i].name == name)
 		{
-			for(var k = 0; k < users[i].groups[j].rooms.length; k++)
+			for(var j = 0; j < users[i].groups.length; j++)
 			{
-				if(users[i].groups[j].rooms[k] == room)
+				if(users[i].groups[j].group == group)
 				{
-					return false;
-				}
-			}
-			users[i].groups[j].rooms.push(room);
-			writeJSON(userDIR,users);
-			return true;
-		}
-	}
-};
-
-const rmvUserFromRoom = (name,room,group) =>
-{
-	for(var i = 0; i < users.length; i++)
-	{
-		for(var j = 0; j < users[i].groups.length; j++)
-		{
-			for(var k = 0; k < users[i].groups[j].rooms.length; k++)
-			{
-				if(users[i].groups[j].rooms[k] == room)
-				{
-					users[i].groups[j].splice(k,1);
+					for(var k = 0; k < users[i].groups[j].rooms.length; k++)
+					{
+						if(users[i].groups[j].rooms[k] == room)
+						{
+							return false;
+						}
+					}
+					users[i].groups[j].rooms.push(room);
 					writeJSON(userDIR,users);
 					return true;
 				}
 			}
-			return false;
+		}
+	}
+};
+
+const rmvUserFromRoom = (name,group,room) =>
+{
+	console.log(name);
+	console.log(group);
+	console.log(room);
+	for(var i = 0; i < users.length; i++)
+	{
+		if(users[i].name == name)
+		{
+			for(var j = 0; j < users[i].groups.length; j++)
+			{
+				if(users[i].groups[j].group == group)
+				{
+					for(var k = 0; k < users[i].groups[j].rooms.length; k++)
+					{
+						if(users[i].groups[j].rooms[k] == room)
+						{
+							users[i].groups[j].rooms.splice(k,1);
+							writeJSON(userDIR,users);
+							return true;
+						}
+					}
+					return false;
+				}
+			}
 		}
 	}
 };

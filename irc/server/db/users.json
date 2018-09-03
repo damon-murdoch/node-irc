@@ -10,6 +10,10 @@
         "rooms": [
           "general"
         ]
+      },
+      {
+        "group": "admin",
+        "rooms": []
       }
     ]
   },
@@ -23,6 +27,26 @@
         "group": "lobby",
         "rooms": [
           "general"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Damon",
+    "mail": "damonmurdoch1@gmail.com",
+    "pass": "test",
+    "salt": null,
+    "groups": [
+      {
+        "group": "lobby",
+        "rooms": [
+          "general"
+        ]
+      },
+      {
+        "group": "GoodGroup",
+        "rooms": [
+          "YeetRoom"
         ]
       }
     ]
