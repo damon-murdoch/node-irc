@@ -302,7 +302,7 @@ app.post('/api/grouppromote',function(req,res)
 	}
 	else
 	{
-		response.err = "User '"+name+"' does not exist or is already super admin.";
+		response.err = "User '"+name+"' does not exist or is already group admin.";
 		res.send(response);
 	}
 });
@@ -326,7 +326,7 @@ app.post('/api/groupdemote',function(req,res)
 	}
 	else
 	{
-		response.err = "User '"+name+"' does not exist or is not super admin.";
+		response.err = "User '"+name+"' does not exist or is not group admin.";
 		res.send(response);
 	}
 });

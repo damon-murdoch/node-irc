@@ -45,6 +45,52 @@ export class GroupadmintoolbarComponent implements OnInit {
 		);
 	}
 	
+	promoteGroupAdmin(name)
+	{
+		let data = 
+		{
+			name:name
+		}
+		this._userService.promoteGroupAdmin(data).subscribe(
+			data =>
+			{
+				if(data["success"])
+				{
+					this.errormsg = "Successfully promoted user!";
+					console.log("Successfully promoted user!");
+				}
+				else
+				{
+					this.errormsg = data["err"];
+					console.log("Error: "+data["err"]);
+				}
+			}
+		);
+	}
+	
+	demoteGroupAdmin(name)
+	{
+		let data = 
+		{
+			name:name
+		}
+		this._userService.demoteGroupAdmin(data).subscribe(
+			data =>
+			{
+				if(data["success"])
+				{
+					this.errormsg = "Successfully demoted user!";
+					console.log("Successfully demoted user!");
+				}
+				else
+				{
+					this.errormsg = data["err"];
+					console.log("Error: "+data["err"]);
+				}
+			}
+		);
+	}
+	
 	createGroup(group)
 	{
 		let data =

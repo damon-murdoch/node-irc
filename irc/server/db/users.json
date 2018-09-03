@@ -10,10 +10,6 @@
         "rooms": [
           "general"
         ]
-      },
-      {
-        "group": "admin",
-        "rooms": []
       }
     ]
   },
@@ -33,20 +29,14 @@
   },
   {
     "name": "Damon",
-    "mail": "damonmurdoch1@gmail.com",
-    "pass": "test",
+    "mail": "awd",
+    "pass": "meme",
     "salt": null,
     "groups": [
       {
         "group": "lobby",
         "rooms": [
           "general"
-        ]
-      },
-      {
-        "group": "GoodGroup",
-        "rooms": [
-          "YeetRoom"
         ]
       }
     ]
