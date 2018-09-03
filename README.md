@@ -240,3 +240,116 @@ err: string , Error Message if error\
 Result: Removes user 'name' from group 'group' if both exist and user is already in group, else sends error
 
 # Angular Architecture
+
+1. Components\
+
+a. Dashboard\
+
+Data:\
+
+name: string, Name of logged in user\
+rank: string, Role of logged in user\
+selectedgroup: string, name of current group selection\
+selectedgroupbool: boolean, false if no group has been selected yet\
+rooms: string[], array of room names in group 'selectedgroup' that are visible to user\
+selectedroom: string, name of currently selected room\
+selectedroombool: boolean, false if no room has been selected yet\
+messages: string[], list of messages in the history of 'room'\
+
+Functions:\
+
+getGroupData(group: string): void\
+getRoomData(room: string): void\
+ngOnInit(void): void\
+
+b. GroupAdminToolbar
+
+Data:\
+
+hidemsg: String, message displayed when hiding / unhiding group admin toolbar\
+errormsg: String, message displayed as notification of function call\
+
+Functions:\
+
+createUser(name: string,mail:string,pass:string,salt:string): void\
+promoteGroupAdmin(name: string): void\
+demoteGroupAdmin(name: string): void\
+createGroup(group: string): void\
+deleteGroup(group: string): void\
+createRoom(group: string, room: string): void\
+deleteRoom(group: string, room: string): void\
+addUserToGroup(name: string, group: string): void\
+rmvUserFromGroup(name: string, group: string): void\
+addUserToRoom(name: string, group: string, room: string): void\
+rmvUserFromRoom(name: string, group: string, room: string): void\
+hideToggle(void): void\
+ngOnInit(void): void
+
+c. Login
+
+Data:\
+Functions:\
+loginUser(name: string, pass: string): void\
+ngOnInit(void): void\
+
+d. Register
+
+Data:\
+Functions:\
+createUser(name: string, mail: string, pass: string, salt: string): void\
+ngOnInit(void): void\
+
+e. Super Admin Toolbar
+
+Data:\
+
+hide: boolean,\
+hidemsg: string,\
+errormsg: string,\
+
+Functions:\
+
+promoteUser(name: string): void\
+demoteUser(name: string): void\
+deleteUser(name: string): void\
+hideToggle(void): void\
+ngOnInit(void): void\
+
+2. Models
+
+a. User
+
+Fields:\
+name: string,\
+mail: string,\
+pass: string,\
+salt: string\
+
+3. Services
+
+a. Data
+Data:\
+Functions:\
+addUserToGroup(data: JSON{name: string, group: string});\
+rmvUserFromGroup(data: JSON{name: string, group: string});\
+addUserToRoom(data: JSON{name: string, group: string, room: string});\
+rmvUserFromRoom(data: JSON{name: string, group: string, room: string}):\
+getData(data: JSON{name: string});\
+getGroupData(data: JSON{name: string, group: string});\
+getRoomData(data: JSON{name: string, group: string, room: string});\
+createGroup(data: JSON{group: string});\
+deleteGroup(data: JSON{group: string});\
+createRoom(data: JSON{group: string, room: string});\
+deleteRoom(data: JSON{group: string, room: string});\
+
+b. User\
+Data:\
+Functions:\
+setLocalStorage(name: string, pass: string): void\
+loginUser(user: JSON{name:string, pass:string}): void\
+deleteUser(user: JSON{name:string}): void\
+createUser(user: JSON{name: string, email: string, pass: string, salt: string}): void\
+promoteSuperAdmin(user: JSON{name:string}): void\
+demoteSuperAdmin(user: JSON{name:string}): void\
+promoteGroupAdmin(user: JSON{name:string}): void\
+demoteGroupAdmin(user: JSON{name:string}): void
