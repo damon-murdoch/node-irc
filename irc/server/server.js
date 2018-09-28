@@ -75,6 +75,33 @@ const server = http.listen(port,host,function()
 			db.createCollection('groupAdmins');
 			db.createCollection('superAdmins');
 			db.createCollection('userGroups');
+
+			const users = db.collection('users');
+			const superAdmins = db.collection('superAdmins');
+
+			users.insertOne({_id:'super',name:'super',mail:'super@chatserver.net',pass:sha256('super')},function(err,result)
+			{
+				if(err != null)
+				{
+					console.log(err);
+				}
+				else
+				{
+					console.log("inserted super");
+				}
+			});
+
+			superAdmins.insertOne({_id:'super'},function(err,result)
+			{
+				if(err != null)
+				{
+					console.log(err);
+				}
+				else
+				{
+					console.log("promoted super");
+				}
+			})
 		}
 	});
 	console.log('Server is listening on ' + host + ':' + port);
@@ -671,7 +698,7 @@ app.post('/api/login', function(req, res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('users');
-			collection.find({_id:name, pass: sha256(pass)}, function(err,result)
+			collection.find({_id:name, pass: sha256(pass)}).toArray(function(err,result)
 			{
 				if(err != null)
 				{
