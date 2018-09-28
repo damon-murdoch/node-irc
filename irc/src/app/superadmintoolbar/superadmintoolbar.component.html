@@ -2,44 +2,44 @@
 	<a class = "hidetoggle" (click) = "hideToggle()">[{{hidemsg}} super admin dashboard]</a>
 </div>
 <div [hidden]=hide class="toolbar">
-	
+
 	<h3> Super Administrator Toolbar </h3>
-	
+
 	<form (submit) = "promoteUser(prname)" class="toolbaritem">
-	
+
 		<h4> Promote User </h4>
-	
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="prname" type="text" placeholder="Username">
+			<input class="form-control" [(ngModel)]="prname" name="prname" type="text" placeholder="Username" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<button type="submit">Promote</button>
-		
+
 	</form>
-	
-	
+
+
 	<form (submit) = "demoteUser(dmname)" class="toolbaritem">
-	
+
 		<h4> Demote User </h4>
-	
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="dmname" type="text" placeholder="Username"  name="dmname">
+			<input class="form-control" [(ngModel)]="dmname" name="dmname" type="text" placeholder="Username" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<button type="submit">Demote</button>
-		
+
 	</form>
-	
+
 	<form (submit) = "deleteUser(dlname)" class="toolbaritem">
-	
+
 		<h4> Delete User </h4>
-	
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="dlname" type="text" placeholder="Username"">
+			<input class="form-control" [(ngModel)]="dlname" name="dlname" type="text" placeholder="Username" [ngModelOptions]="{standalone: true}">
 		</div>
-		
-		<button type="submit"">Demote</button>
-		
+
+		<button type="submit">Demote</button>
+
 	</form>
 </div>
 <div id="saErrmsg">

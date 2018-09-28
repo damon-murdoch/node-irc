@@ -6,12 +6,13 @@ const fs = require("fs");
 const dateTime = require('node-datetime');
 const cors = require('cors');
 
-var corsOptions = 
-{
-	origin:"http://localhost:1337",
-	optionsSuccessStatus: 200
-}
+const mc = require('mongodb').MongoClient;
+const mongoaddr = 'mongodb://localhost:27017';
+const sha256 = require('js-sha256').sha256;
+
 // JSON Files
+
+
 
 const userDIR = './db/users.json';
 const roomDIR = './db/rooms.json';
@@ -25,21 +26,24 @@ var groups = require(groupDIR);
 var superadmins = require(superadminDIR);
 var groupadmins = require(groupadminDIR);
 
+
+
 // Constants
 
 // App Setup Data
 const app = express();
+
+var corsOptions = {
+  origin: 'http://localhost:4200',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+app.use(cors(corsOptions))
 
 const http = require('http').Server(app);
 
 // File Directories
 app.use(express.static(__dirname+'/www'));
 app.use(express.static(__dirname+'/www/img'));
-
-app.use(express.static(__dirname+'/www/login'));
-app.use(express.static(__dirname+'/www/logout'));
-app.use(express.static(__dirname+'/www/register'));
-app.use(express.static(__dirname+'/www/dashboard'));
 
 app.use(express.static(path.join(__dirname,'../dist/irc')));
 
@@ -74,14 +78,14 @@ app.get('/*',function(req,res)
 app.post('/api/deluser',function(req,res)
 {
 	console.log("request to /api/deluser");
-	
+
 	var response = {
 		"success":false,
 		"err":""
 	};
-	
+
 	const name = req.body.name;
-	
+
 	if(deleteUser(name))
 	{
 		response.success = true;
@@ -96,18 +100,18 @@ app.post('/api/deluser',function(req,res)
 
 app.post('/api/register',function(req,res)
 {
-	
+
 	console.log("request to /api/register");
-	
+
 	var response = {
 		"success":false,
 		"err":""
 	};
-	
+
 	const name = req.body.name;
 	const mail = req.body.mail;
 	const pass = req.body.pass;
-	
+
 	if(register(name,mail,pass))
 	{
 		response.success = true;
@@ -123,17 +127,17 @@ app.post('/api/register',function(req,res)
 app.post('/api/rmadd',function(req,res)
 {
 	console.log("request to /api/rmadd");
-	
+
 	const name = req.body.name;
 	const group = req.body.group;
 	const room = req.body.room;
-	
-	var response = 
+
+	var response =
 	{
 		"success":false,
 		"err":""
 	};
-	
+
 	if(addUserToRoom(name,room,group))
 	{
 		response.success = true;
@@ -149,17 +153,17 @@ app.post('/api/rmadd',function(req,res)
 app.post('/api/rmrmv',function(req,res)
 {
 	console.log("request to /api/rmrmv");
-	
+
 	const name = req.body.name;
 	const group = req.body.group;
 	const room = req.body.room;
-	
-	var response = 
+
+	var response =
 	{
 		"success":false,
 		"err":""
 	};
-	
+
 	if(rmvUserFromRoom(name,group,room))
 	{
 		response.success = true;
@@ -174,18 +178,18 @@ app.post('/api/rmrmv',function(req,res)
 
 app.post('/api/getgroup',function(req,res)
 {
-	
+
 	console.log("request to /api/getgroup");
-	
+
 	const name = req.body.name;
 	const group = req.body.group;
-	
-	var response = 
+
+	var response =
 	{
 		"admin":false,
 		"rooms":[]
 	};
-	
+
 	for(var i = 0; i < superadmins.length; i++)
 	{
 		if (superadmins[i].name == name)
@@ -193,7 +197,7 @@ app.post('/api/getgroup',function(req,res)
 			response.admin = true;
 		}
 	}
-	
+
 	if(!response.admin)
 	{
 		for(var i = 0; i < groupadmins.length; i++)
@@ -238,16 +242,16 @@ app.post('/api/getgroup',function(req,res)
 
 app.post('/api/superpromote',function(req,res)
 {
-	
+
 	console.log("request to /api/superpromote");
-	
+
 	const name = req.body.name;
-	
+
 	response = {
 		"success":false,
 		"err":""
 	};
-	
+
 	if(promoteSuperAdmin(name))
 	{
 		response.success = true;
@@ -263,14 +267,14 @@ app.post('/api/superpromote',function(req,res)
 app.post('/api/superdemote',function(req,res)
 {
 	console.log("request to /api/superdemote");
-	
+
 	const name = req.body.name;
-	
+
 	response = {
 		"success":false,
 		"err":""
 	};
-	
+
 	if(demoteSuperAdmin(name))
 	{
 		response.success = true;
@@ -285,16 +289,16 @@ app.post('/api/superdemote',function(req,res)
 
 app.post('/api/grouppromote',function(req,res)
 {
-	
+
 	console.log("request to /api/grouppromote");
-	
+
 	const name = req.body.name;
-	
+
 	response = {
 		"success":false,
 		"err":""
 	};
-	
+
 	if(promoteSuperAdmin(name))
 	{
 		response.success = true;
@@ -309,16 +313,16 @@ app.post('/api/grouppromote',function(req,res)
 
 app.post('/api/groupdemote',function(req,res)
 {
-	
+
 	console.log("request to /api/groupdemote");
-	
+
 	const name = req.body.name;
-	
+
 	response = {
 		"success":false,
 		"err":""
 	};
-	
+
 	if(demoteSuperAdmin(name))
 	{
 		response.success = true;
@@ -333,17 +337,17 @@ app.post('/api/groupdemote',function(req,res)
 
 app.post('/api/creategroup',function(req,res)
 {
-	
+
 	console.log("request to /api/creategroup");
-	
+
 	const group = req.body.group;
 	const owner = req.body.name;
-	
+
 	response = {
 		"success":false,
 		"err":""
 	};
-	
+
 	if(createGroup(group,owner))
 	{
 		for(var i = 0; i < users.length; i++)
@@ -361,21 +365,21 @@ app.post('/api/creategroup',function(req,res)
 	{
 		response.err = "Group '" + group + "' already exists.";
 		res.send(response);
-	}	
+	}
 });
 
 app.post('/api/deletegroup',function(req,res)
 {
-	
+
 	console.log("request to /api/deletegroup");
-	
+
 	const group = req.body.group;
-	
+
 	response = {
 		"success":false,
 		"err":""
 	};
-	
+
 	if(deleteGroup(group))
 	{
 		for(var i = 0; i < users.length; i++)
@@ -389,7 +393,7 @@ app.post('/api/deletegroup',function(req,res)
 			}
 		}
 		writeJSON(userDIR,users);
-		
+
 		response.success = true;
 		res.send(response);
 	}
@@ -402,17 +406,17 @@ app.post('/api/deletegroup',function(req,res)
 
 app.post('/api/createroom',function(req,res)
 {
-	
+
 	console.log("request to /api/createroom");
-	
+
 	const group = req.body.group;
 	const room = req.body.room;
-	
+
 	response = {
 		"success":false,
 		"err":""
 	};
-	
+
 	if(createRoom(room,group))
 	{
 		response.success = true;
@@ -422,22 +426,22 @@ app.post('/api/createroom',function(req,res)
 	{
 		response.err = "Group '" + group + "' already exists.";
 		res.send(response);
-	}	
+	}
 });
 
 app.post('/api/deleteroom',function(req,res)
 {
-	
+
 	console.log("request to /api/deleteroom");
-	
+
 	const group = req.body.group;
 	const room = req.body.room;
-	
+
 	response = {
 		"success":false,
 		"err":""
 	};
-	
+
 	if(deleteRoom(room,group))
 	{
 		response.success = true;
@@ -453,15 +457,15 @@ app.post('/api/deleteroom',function(req,res)
 app.post('/api/room',function(req,res)
 {
 	console.log("request to /api/room");
-	
+
 	const group = req.body.group;
 	const room = req.body.room;
-	
-	var response = 
+
+	var response =
 	{
 		"log":[]
 	}
-	
+
 	for(var i = 0; i < groups.length; i++)
 	{
 		if (groups[i]["group"]==group)
@@ -478,17 +482,17 @@ app.post('/api/room',function(req,res)
 app.post('/api/data',function(req,res)
 {
 	console.log("request to /api/data");
-	
+
 	console.log(req.body);
-	
+
 	const name = req.body.name;
-	
-	var response = 
+
+	var response =
 	{
 		'rank':'standard',
 		'groups':[]
 	};
-	
+
 	for(var i = 0; i < superadmins.length; i++)
 	{
 		if(superadmins[i]["name"] == name)
@@ -497,7 +501,7 @@ app.post('/api/data',function(req,res)
 			break;
 		}
 	}
-	
+
 	if(response["rank"] == 'standard')
 	{
 		for(var i = 0; i < superadmins.length; i++)
@@ -509,7 +513,7 @@ app.post('/api/data',function(req,res)
 			}
 		}
 	}
-	
+
 	if(response["rank"] =='super')
 	{
 		for(var i = 0; i < groups.length; i++)
@@ -536,7 +540,7 @@ app.post('/api/data',function(req,res)
 });
 
 app.post('/api/login', function(req, res)
-{	
+{
 	console.log("request to /api/login");
 
     const name = req.body.name;
@@ -562,7 +566,7 @@ app.post('/api/login', function(req, res)
 			}
 		}
 	}
-	
+
 	// user not found
 	result = {"loggedIn":false,"err":1};
 	res.send(result);
@@ -573,15 +577,15 @@ app.post('/api/login', function(req, res)
 app.post('/api/groupadd',function(req,res)
 {
 	console.log("request to /api/groupadd");
-	
+
 	const name = req.body.name;
 	const group = req.body.group;
-	
+
 	response = {
 		"success":false,
 		"err":""
 	};
-	
+
 	if(addUserToGroup(name,group))
 	{
 		response.success = true;
@@ -597,16 +601,16 @@ app.post('/api/groupadd',function(req,res)
 app.post('/api/grouprmv',function(req,res)
 {
 	console.log("request to /api/grouprmv");
-	
+
 	const name = req.body.name;
 	const group = req.body.group;
-	
-	response = 
+
+	response =
 	{
 		"success":false,
 		"err":""
 	};
-	
+
 	if((name,group))
 	{
 		response.success = true;
@@ -624,7 +628,7 @@ app.post('/api/grouprmv',function(req,res)
 const writeJSON = (filepath,obj) =>
 {
 	const json = JSON.stringify(obj,null,2);
-			
+
 	fs.writeFile(filepath,json,'utf8',function(err)
 	{
 		if(err) throw err;
@@ -634,7 +638,7 @@ const writeJSON = (filepath,obj) =>
 // New User
 const userJSON = (name,mail,pass) =>
 {
-	json = 
+	json =
 	{
 		"name":name,
 		"mail":mail,
@@ -642,42 +646,42 @@ const userJSON = (name,mail,pass) =>
 		"salt":null,
 		"groups":[{group:"lobby",rooms:['general']}]
 	};
-	
+
 	return json;
 };
 
 // New Super Admin
 const superadminJSON = (name) =>
 {
-	json = 
+	json =
 	{
 		"name":name
 	};
-	
+
 	return json;
 };
 
 // New Group
 const groupJSON = (group) =>
 {
-	json = 
+	json =
 	{
 		"group":group,
 		"rooms":[roomJSON("general")]
 	};
-	
+
 	return json;
 };
 
 // New Room
 const roomJSON = (room) =>
 {
-	json = 
+	json =
 	{
 		"room":room,
 		"log":[]
 	};
-	
+
 	return json;
 };
 
@@ -685,14 +689,14 @@ const roomJSON = (room) =>
 const msgJSON = (user,msg) =>
 {
 	const dt = dateTime.create();
-	
-	json = 
+
+	json =
 	{
 		"user":user,
 		"time":dt.format('Y-m-d H:M:S'),
 		"msg":msg
 	};
-	
+
 	return json;
 };
 
@@ -704,17 +708,17 @@ const register = (name,mail,pass) =>
 	{
 		return false;
 	}
-	
+
 	if(!mail || mail.indexOf(' ') > -1)
 	{
 		return false;
 	}
-	
+
 	if(!pass || pass.indexOf(' ') > -1)
 	{
 		return false;
 	}
-	
+
 	for(var i=0; i<users.length;i++)
 	{
 		//console.log(users[i]);
@@ -723,20 +727,20 @@ const register = (name,mail,pass) =>
 			//console.log("Member already exists with name!");
 			return false;
 		}
-		
+
 		if(users[i]["mail"] == mail)
 		{
 			//console.log("Member already exists with email!");
 			return false;
 		}
 	}
-	
+
 	users.push(userJSON(name,mail,pass));
-	
+
 	writeJSON(userDIR,users);
-	
+
 	return true;
-	
+
 };
 
 const login = (name,pass) =>
@@ -749,7 +753,7 @@ const login = (name,pass) =>
 			return true;
 		}
 	}
-	
+
 	// block login
 	return false;
 };
@@ -774,7 +778,7 @@ const promoteSuperAdmin = (user) =>
 			break;
 		}
 	}
-	
+
 	if(found)
 	{
 		for(var i = 0; i < superadmins.length; i++)
@@ -784,10 +788,10 @@ const promoteSuperAdmin = (user) =>
 				return false;
 			}
 		}
-	
+
 		superadmins.push(superadminJSON(user));
 		writeJSON(superadminDIR,superadmins);
-		
+
 		return true;
 	}
 	else
@@ -803,9 +807,9 @@ const demoteSuperAdmin = (user) =>
 		if (superadmins[i]["name"] == user)
 		{
 			superadmins.splice(i,1);
-			
+
 			writeJSON(superadminDIR,superadmins);
-			
+
 			return true;
 		}
 	}
@@ -824,9 +828,9 @@ const promoteGroupAdmin = (user) =>
 		}
 	}
 	groupadmins.push(user);
-	
+
 	writeJSON(groupadminDIR,groupadmins);
-	
+
 	return true;
 };
 
@@ -852,7 +856,7 @@ const createGroup = (group) =>
 	{
 		return false;
 	}
-	
+
 	for(var i = 0;i<groups.length;i++)
 	{
 		if(groups[i]["group"] == group)
@@ -860,11 +864,11 @@ const createGroup = (group) =>
 			return false;
 		}
 	}
-	
+
 	groups.push(groupJSON(group));
-	
+
 	writeJSON(groupDIR,groups);
-	
+
 	return true;
 };
 
@@ -875,9 +879,9 @@ const deleteGroup = (group) =>
 		if (groups[i]["group"] == group)
 		{
 			groups.splice(i,1);
-			
+
 			writeJSON(groupDIR,groups);
-			
+
 			return true;
 		}
 	}
@@ -936,12 +940,12 @@ const createRoom = (room,group) =>
 	{
 		return false;
 	}
-	
+
 	if(room.indexOf(' ') > -1)
 	{
 		return false;
 	}
-	
+
 	for(var i = 0; i < groups.length; i++)
 	{
 		if(groups[i]["group"]==group)
@@ -957,14 +961,14 @@ const createRoom = (room,group) =>
 			break;
 		}
 	}
-	
+
 	writeJSON(groupDIR,groups);
-	
+
 	return true;
 };
 
 const deleteRoom = (room,group) =>
-{	
+{
 	for(var i = 0; i < groups.length; i++)
 	{
 		if(groups[i]["group"]==group)
@@ -981,7 +985,7 @@ const deleteRoom = (room,group) =>
 			break;
 		}
 	}
-	
+
 	return false;
 };
 
@@ -1050,7 +1054,7 @@ const deleteUser = (name) =>
 			writeJSON(superadminDIR,superadmins);
 		}
 	}
-	
+
 	for(var i = 0; i < groupadmins.length; i++)
 	{
 		if(users[i].name == name)
@@ -1059,8 +1063,8 @@ const deleteUser = (name) =>
 			writeJSON(groupadminDIR,groupadmins);
 		}
 	}
-	
-	
+
+
 	for(var i = 0; i < users.length; i++)
 	{
 		if(users[i].name == name)

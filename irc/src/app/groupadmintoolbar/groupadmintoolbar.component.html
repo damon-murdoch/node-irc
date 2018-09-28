@@ -4,177 +4,177 @@
 <div [hidden]=hide id="groupadmintoolbar" class="toolbar">
 
 	<h3> Group Administrator Toolbar </h3>
-	
+
 	<form (submit)="createUser(crname,crmail,crpass)" class="toolbaritem">
 		<h4> Create User </h4>
-	
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="crname" type="text" placeholder="Username">
+			<input class="form-control" [(ngModel)]="crname" type="text" placeholder="Username" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="crmail" type="text" placeholder="Email Address">
+			<input class="form-control" [(ngModel)]="crmail" type="text" placeholder="Email Address" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="crpass" type="password" placeholder="Password">
+			<input class="form-control" [(ngModel)]="crpass" type="password" placeholder="Password" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<button type="submit">Register</button>
 	</form>
-	
+
 	<form (submit) = "promoteGroupAdmin(prname)" class="toolbaritem">
-	
+
 		<h4> Promote User </h4>
-	
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="prname" type="text" placeholder="Username">
+			<input class="form-control" [(ngModel)]="prname" type="text" placeholder="Username" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<button type="submit">Promote</button>
-		
+
 	</form>
-	
-	
+
+
 	<form (submit) = "demoteGroupAdmin(dmname)" class="toolbaritem">
-	
+
 		<h4> Demote User </h4>
-	
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="dmname" type="text" placeholder="Username">
+			<input class="form-control" [(ngModel)]="dmname" type="text" placeholder="Username" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<button type="submit">Demote</button>
-		
+
 	</form>
-	
+
 	<form (submit)="createGroup(crgrp)" class="toolbaritem">
-		
+
 		<h4> Create Group </h4>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="crgrp" type="text" placeholder="Group Name">
+			<input class="form-control" [(ngModel)]="crgrp" type="text" placeholder="Group Name" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<button type="submit">Create</button>
-		
+
 	</form>
-	
+
 	<form (submit)="deleteGroup(dlgrp)" class="toolbaritem">
-		
+
 		<h4> Delete Group </h4>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="dlgrp" type="text" placeholder="Group Name">
+			<input class="form-control" [(ngModel)]="dlgrp" type="text" placeholder="Group Name" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<button type="submit">Delete</button>
-		
+
 	</form>
 
 	<form (submit)="addUserToGroup(autname,autgrp)" class="toolbaritem">
-		
+
 		<h4> Add User To Group </h4>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="autname" type="text" placeholder="User Name">
+			<input class="form-control" [(ngModel)]="autname" type="text" placeholder="User Name" [ngModelOptions]="{standalone: true}">
 		</div>
-	
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="autgrp" type="text" placeholder="Group Name">
+			<input class="form-control" [(ngModel)]="autgrp" type="text" placeholder="Group Name" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<button type="submit">Insert</button>
-		
+
 	</form>
-	
+
 	<form (submit)="rmvUserFromGroup(rutname,rutmgrp)" class="toolbaritem">
-		
+
 		<h4> Remove User From Group </h4>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="rutname" type="text" placeholder="User Name">
+			<input class="form-control" [(ngModel)]="rutname" type="text" placeholder="User Name" [ngModelOptions]="{standalone: true}">
 		</div>
-	
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="rutmgrp" type="text" placeholder="Group Name">
+			<input class="form-control" [(ngModel)]="rutmgrp" type="text" placeholder="Group Name" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<button type="submit">Remove</button>
-		
+
 	</form>
-	
+
 	<form (submit)="createRoom(crrmgrp,crrrm)" class="toolbaritem">
-		
+
 		<h4> Create Room </h4>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="crrmgrp" type="text" placeholder="Group Name">
+			<input class="form-control" [(ngModel)]="crrmgrp" type="text" placeholder="Group Name" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="crrrm" type="text" placeholder="Room Name">
+			<input class="form-control" [(ngModel)]="crrrm" type="text" placeholder="Room Name" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<button type="submit">Create</button>
-		
+
 	</form>
-	
+
 	<form (submit)="deleteRoom(dlrmgrp,dlrm)" class="toolbaritem">
-		
+
 		<h4> Delete Room </h4>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="dlrmgrp" type="text" placeholder="Group Name">
+			<input class="form-control" [(ngModel)]="dlrmgrp" type="text" placeholder="Group Name" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="dlrm" type="text" placeholder="Room Name">
+			<input class="form-control" [(ngModel)]="dlrm" type="text" placeholder="Room Name" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<button type="submit">Delete</button>
-		
+
 	</form>
-	
-	
+
+
 	<form (submit)="addUserToRoom(autbname,autbroom,autbgrp)" class="toolbaritem">
-		
+
 		<h4> Add User To Room </h4>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="autbname" type="text" placeholder="User Name">
+			<input class="form-control" [(ngModel)]="autbname" type="text" placeholder="User Name" [ngModelOptions]="{standalone: true}">
 		</div>
-	
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="autbgrp" type="text" placeholder="Group Name">
+			<input class="form-control" [(ngModel)]="autbgrp" type="text" placeholder="Group Name" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="autbroom" type="text" placeholder="Room Name">
+			<input class="form-control" [(ngModel)]="autbroom" type="text" placeholder="Room Name" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<button type="submit">Insert</button>
-		
+
 	</form>
-	
+
 	<form (submit)="rmvUserFromRoom(rutbname,rutbmgrp,rutbroom)" class="toolbaritem">
-		
+
 		<h4> Remove User From Room </h4>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="rutbname" type="text" placeholder="User Name">
+			<input class="form-control" [(ngModel)]="rutbname" type="text" placeholder="User Name" [ngModelOptions]="{standalone: true}">
 		</div>
-	
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="rutbmgrp" type="text" placeholder="Group Name">
+			<input class="form-control" [(ngModel)]="rutbmgrp" type="text" placeholder="Group Name" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<div class="form-group">
-			<input class="form-control" [(ngModel)]="rutbroom" type="text" placeholder="Room Name">
+			<input class="form-control" [(ngModel)]="rutbroom" type="text" placeholder="Room Name" [ngModelOptions]="{standalone: true}">
 		</div>
-		
+
 		<button type="submit">Delete</button>
-		
+
 	</form>
 </div>
 <div id="gaErrmsg">

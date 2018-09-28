@@ -17,7 +17,10 @@
     "express": "^4.16.3",
     "i": "^0.3.6",
     "jquery": "^3.3.1",
+    "js-sha256": "^0.9.0",
+    "mongodb": "^3.1.6",
     "node-datetime": "^2.1.0",
+    "nodemon": "^1.18.4",
     "passport-remember-me": "0.0.1"
   }
 }
