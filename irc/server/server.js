@@ -59,6 +59,24 @@ const port = 1337;
 // Start Server
 const server = http.listen(port,host,function()
 {
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+	{
+		if(err != null)
+		{
+			console.log(err);
+		}
+		else
+		{
+			const db = client.db('chatserver');
+
+			db.createCollection('users');
+			db.createCollection('groups');
+			db.createCollection('rooms');
+			db.createCollection('groupAdmins');
+			db.createCollection('superAdmins');
+			db.createCollection('userGroups');
+		}
+	});
 	console.log('Server is listening on ' + host + ':' + port);
 });
 
@@ -79,23 +97,31 @@ app.post('/api/deluser',function(req,res)
 {
 	console.log("request to /api/deluser");
 
-	var response = {
-		"success":false,
-		"err":""
-	};
-
 	const name = req.body.name;
 
-	if(deleteUser(name))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "User with name " + name + " does not exist!";
-		res.send(response);
-	}
+		if(err != null)
+		{
+			console.log(err);
+		}
+		else
+		{
+			const collection = client.db('chatserver').collection('users');
+			collection.deleteOne({_id:name},function(err,result)
+			{
+				if(err != null)
+				{
+					console.log(err);
+				}
+				else
+				{
+					console.log(result);
+				}
+			});
+		}
+	});
+	res.send({"success":true,"err":""})
 });
 
 app.post('/api/register',function(req,res)
@@ -112,16 +138,29 @@ app.post('/api/register',function(req,res)
 	const mail = req.body.mail;
 	const pass = req.body.pass;
 
-	if(register(name,mail,pass))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "User with this name " + name + " or email" + mail + "  already exists!";
-		res.send(response);
-	}
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('users');
+			collection.insertOne({_id:name, name:name, mail:mail,pass: sha256(pass)}, function(err,result)
+			{
+				if(err != null)
+				{
+					console.log(err);
+				}
+				else
+				{
+					console.log(result.ops);
+				}
+			});
+	  }
+	});
+
 });
 
 app.post('/api/rmadd',function(req,res)
@@ -138,16 +177,30 @@ app.post('/api/rmadd',function(req,res)
 		"err":""
 	};
 
-	if(addUserToRoom(name,room,group))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "User "+name+" does not exist or user is already in group "+group+" ";
-		res.send(response);
-	}
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('userGroups');
+			collection.update({_id:{name:name,group:group}},{$push: {rooms: room}},function(err,result)
+			{
+				if(err != null)
+				{
+					console.log(err);
+				}
+				else
+				{
+					console.log(result);
+				}
+			});
+	  }
+	});
+
+	res.send(response);
 });
 
 app.post('/api/rmrmv',function(req,res)
@@ -164,16 +217,30 @@ app.post('/api/rmrmv',function(req,res)
 		"err":""
 	};
 
-	if(rmvUserFromRoom(name,group,room))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "User does not exist / user is not in group";
-		res.send(response);
-	}
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('userGroups');
+			collection.update({_id:{name:name,group:group}},{$pull: {rooms: room}},function(err,result)
+			{
+				if(err != null)
+				{
+					console.log(err);
+				}
+				else
+				{
+					console.log(result);
+				}
+			});
+	  }
+	});
+
+	res.send(response);
 });
 
 app.post('/api/getgroup',function(req,res)
@@ -190,54 +257,36 @@ app.post('/api/getgroup',function(req,res)
 		"rooms":[]
 	};
 
-	for(var i = 0; i < superadmins.length; i++)
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		if (superadmins[i].name == name)
-		{
-			response.admin = true;
-		}
-	}
-
-	if(!response.admin)
-	{
-		for(var i = 0; i < groupadmins.length; i++)
-		{
-			if(groupadmins[i].name == name)
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('userGroups');
+			collection.find({_id: {name:name,group:group}}).toArray(function(err,docs)
 			{
-				response.admin = true;
-			}
-		}
-	}
-	if(response.admin)
-	{
-		for(var i = 0; i < groups.length; i++)
-		{
-			if (groups[i]["group"]==group)
-			{
-				for(var j = 0; j < groups[i].rooms.length; j++)
+				if(err != null)
 				{
-					response.rooms.push(groups[i].rooms[j].room);
+					console.log(err);
 				}
-			}
-		}
-	}
-	else
-	{
-		for(var i = 0; i < users.length; i++)
-		{
-			if(users[i].name == name)
-			{
-				for(var j = 0; j < users[i].groups.length; j++)
+				else
 				{
-					if(users[j].groups[j].group == group)
+					if (docs.length > 0)
 					{
-						response.rooms = users[j].groups[j].rooms;
+						data = docs[0].rooms;
+						res.send({admin:false, rooms:data});
+					}
+					else
+					{
+						res.send({admin:false,rooms:[]})
 					}
 				}
-			}
-		}
-	}
-	res.send(response);
+			});
+	  }
+	});
 });
 
 app.post('/api/superpromote',function(req,res)
@@ -252,16 +301,28 @@ app.post('/api/superpromote',function(req,res)
 		"err":""
 	};
 
-	if(promoteSuperAdmin(name))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "User '"+name+"' does not exist or is already super admin.";
-		res.send(response);
-	}
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('superAdmins');
+			collection.insertOne({_id:name},function(err,result)
+			{
+				if(err != null)
+				{
+					console.log(err);
+				}
+				else
+				{
+					console.log(result);
+				}
+			});
+	  }
+	});
 });
 
 app.post('/api/superdemote',function(req,res)
@@ -270,45 +331,62 @@ app.post('/api/superdemote',function(req,res)
 
 	const name = req.body.name;
 
-	response = {
-		"success":false,
-		"err":""
-	};
-
-	if(demoteSuperAdmin(name))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "User '"+name+"' does not exist or is not super admin.";
-		res.send(response);
-	}
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('superAdmins');
+			collection.deleteOne({_id:name},function(err,result)
+			{
+				if(err != null)
+				{
+					console.log(err);
+					res.send({success:false,err:err});
+				}
+				else
+				{
+					console.log(result);
+					res.send({sucesss:true,err:""});
+				}
+			});
+	  }
+	});
 });
 
 app.post('/api/grouppromote',function(req,res)
 {
-
 	console.log("request to /api/grouppromote");
 
 	const name = req.body.name;
 
-	response = {
-		"success":false,
-		"err":""
-	};
-
-	if(promoteSuperAdmin(name))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "User '"+name+"' does not exist or is already group admin.";
-		res.send(response);
-	}
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('groupAdmins');
+			collection.insertOne({_id:name},function(err,result)
+			{
+				if(err != null)
+				{
+					console.log(err);
+					res.send({success:false,err:err});
+				}
+				else
+				{
+					console.log(result);
+					res.send({sucesss:true,err:""});
+				}
+			});
+	  }
+	});
 });
 
 app.post('/api/groupdemote',function(req,res)
@@ -318,21 +396,30 @@ app.post('/api/groupdemote',function(req,res)
 
 	const name = req.body.name;
 
-	response = {
-		"success":false,
-		"err":""
-	};
-
-	if(demoteSuperAdmin(name))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "User '"+name+"' does not exist or is not group admin.";
-		res.send(response);
-	}
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('groupAdmins');
+			collection.deleteOne({_id:name},function(err,result)
+			{
+				if(err != null)
+				{
+					console.log(err);
+					res.send({success:false,err:err});
+				}
+				else
+				{
+					console.log(result);
+					res.send({sucesss:true,err:""});
+				}
+			});
+	  }
+	});
 });
 
 app.post('/api/creategroup',function(req,res)
@@ -343,65 +430,62 @@ app.post('/api/creategroup',function(req,res)
 	const group = req.body.group;
 	const owner = req.body.name;
 
-	response = {
-		"success":false,
-		"err":""
-	};
-
-	if(createGroup(group,owner))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		for(var i = 0; i < users.length; i++)
-		{
-			if(users[i].name == owner)
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('groups');
+			collections.insertOne({_id:group,owner:name,rooms:[]},function(err,result)
 			{
-				users[i].groups.push(group);
-			}
-		}
-		writeJSON(userDIR,users);
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "Group '" + group + "' already exists.";
-		res.send(response);
-	}
+				if(err != null)
+				{
+					console.log(err);
+					res.send({success:false,err:err});
+				}
+				else
+				{
+					console.log(result);
+					res.send({sucesss:true,err:""});
+				}
+			});
+	  }
+	});
 });
 
 app.post('/api/deletegroup',function(req,res)
 {
-
 	console.log("request to /api/deletegroup");
 
 	const group = req.body.group;
 
-	response = {
-		"success":false,
-		"err":""
-	};
-
-	if(deleteGroup(group))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		for(var i = 0; i < users.length; i++)
-		{
-			for(var j = 0; j < users[i].groups.length; j++)
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('groups');
+			collections.deleteOne({_id:group},function(err,result)
 			{
-				if (users[i].groups[j] == group)
+				if(err != null)
 				{
-					users[i].groups.splice(j,1);
+					console.log(err);
+					res.send({success:false,err:err});
 				}
-			}
-		}
-		writeJSON(userDIR,users);
-
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "Group '" + group + "' does not exist.";
-		res.send(response);
-	}
+				else
+				{
+					console.log(result);
+					res.send({sucesss:true,err:""});
+				}
+			});
+	  }
+	});
 });
 
 app.post('/api/createroom',function(req,res)
@@ -412,21 +496,30 @@ app.post('/api/createroom',function(req,res)
 	const group = req.body.group;
 	const room = req.body.room;
 
-	response = {
-		"success":false,
-		"err":""
-	};
-
-	if(createRoom(room,group))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "Group '" + group + "' already exists.";
-		res.send(response);
-	}
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('rooms');
+			collection.insertOne({_id: {group:group, room:room}, log:[]},function(err,result)
+			{
+				if(err != null)
+				{
+					console.log(err);
+					res.send({success:false,err:err});
+				}
+				else
+				{
+					console.log(result);
+					res.send({sucesss:true,err:""});
+				}
+			});
+	  }
+	});
 });
 
 app.post('/api/deleteroom',function(req,res)
@@ -437,21 +530,30 @@ app.post('/api/deleteroom',function(req,res)
 	const group = req.body.group;
 	const room = req.body.room;
 
-	response = {
-		"success":false,
-		"err":""
-	};
-
-	if(deleteRoom(room,group))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "Room '" + room + "' does not exist.";
-		res.send(response);
-	}
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('groups');
+			collection.deleteOne({_id: {group:group, room:room}},function(err,result)
+			{
+				if(err != null)
+				{
+					console.log(err);
+					res.send({success:false,err:err});
+				}
+				else
+				{
+					console.log(result);
+					res.send({sucesss:true,err:""});
+				}
+			});
+	  }
+	});
 });
 
 app.post('/api/room',function(req,res)
@@ -461,22 +563,30 @@ app.post('/api/room',function(req,res)
 	const group = req.body.group;
 	const room = req.body.room;
 
-	var response =
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		"log":[]
-	}
-
-	for(var i = 0; i < groups.length; i++)
-	{
-		if (groups[i]["group"]==group)
-		{
-			for(var j = 0; j < groups[i].rooms.length; j++)
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('groups');
+			collection.deleteOne({_id: {group:group, room:room}},function(err,result)
 			{
-				if(groups[i].rooms[j].log);
-			}
-		}
-	}
-	res.send(response);
+				if(err != null)
+				{
+					console.log(err);
+					res.send({success:false,err:err});
+				}
+				else
+				{
+					console.log(result);
+					res.send({sucesss:true,err:""});
+				}
+			});
+	  }
+	});
 });
 
 app.post('/api/data',function(req,res)
@@ -487,90 +597,101 @@ app.post('/api/data',function(req,res)
 
 	const name = req.body.name;
 
-	var response =
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		'rank':'standard',
-		'groups':[]
-	};
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const users = client.db('chatserver').collection('users');
+			const groups = client.db('chatserver').collection('groups');
+			const superAdmins = client.db('chatserver').collection('superAdmins');
+			const groupAdmins = client.db('chatserver').collection('groupAdmins');
 
-	for(var i = 0; i < superadmins.length; i++)
-	{
-		if(superadmins[i]["name"] == name)
-		{
-			response["rank"] = 'super';
-			break;
-		}
-	}
-
-	if(response["rank"] == 'standard')
-	{
-		for(var i = 0; i < superadmins.length; i++)
-		{
-			if(groupadmins[i] == name)
+			superAdmins.find({'_id':name},function(err,result)
 			{
-				response["rank"] = 'group';
-				break;
-			}
-		}
-	}
-
-	if(response["rank"] =='super')
-	{
-		for(var i = 0; i < groups.length; i++)
-		{
-			response.groups.push(groups[i].group);
-		}
-	}
-	else
-	{
-		for(var i = 0; i < users.length; i++)
-		{
-			if(users[i]["name"] == name)
-			{
-				//response['groups'] = users[i]['groups'];
-				//break;
-				for(var j = 0; j < users[i].groups.length; j++)
+				if(err != null)
 				{
-					response.groups.push(users[i].groups[j].group);
+					res.send({"err":err});
 				}
-			}
-		}
-	}
-	res.send(response);
+				else if(result.length > 0)
+				{
+					groups.distinct(_id,{},function(err,docs)//.toArray(function(err,docs)
+					{
+						console.log(docs);
+						res.send({'rank':'super',groups:docs});
+					});
+				}
+				else
+				{
+					groupAdmins.find({_id:name},function(err,result)
+					{
+						if(err != null)
+						{
+							res.send({"err":err});
+						}
+						else if(result.length > 0)
+						{
+							groups.distinct(_id,{},function(err,docs)//.toArray(function(err,docs)
+							{
+								console.log(docs);
+								res.send({'rank':'group',groups:docs})
+							});
+						}
+						else
+						{
+							groups.distinct('_id',{id: {name:name,group: {$regex:".*"}}},function(err,docs)//.toArray(function(err,docs)
+							{
+								console.log(docs);
+								res.send({'rank':'standard',groups:docs})
+							});
+						}
+					});
+				}
+			});
+	  }
+	});
 });
 
 app.post('/api/login', function(req, res)
 {
 	console.log("request to /api/login");
 
-    const name = req.body.name;
-    const pass = req.body.pass;
+  const name = req.body.name;
+  const pass = req.body.pass;
 
-	for(var i=0;i<users.length;i++)
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		if (users[i]["name"] == name)
-		{
-			if(users[i]["pass"] == pass)
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('users');
+			collection.find({_id:name, pass: sha256(pass)}, function(err,result)
 			{
-				// logged in!
-				result = {"loggedIn":true};
-				res.send(result);
-				return true;
-			}
-			else
-			{
-				// wrong password
-				result = {"loggedIn":false,"err":0};
-				res.send(result);
-				return false;
-			}
-		}
-	}
-
-	// user not found
-	result = {"loggedIn":false,"err":1};
-	res.send(result);
-	return false;
+				if(err != null)
+				{
+					console.log(err);
+				}
+				else
+				{
+					if(result.length > 0)
+					{
+						res.send({"loggedIn":true,"err":0});
+					}
+					else
+					{
+						res.send({"loggedIn":false,"err":1});
+					}
+					console.log(result);
+				}
+			});
+	  }
+	});
 });
 
 
@@ -586,16 +707,30 @@ app.post('/api/groupadd',function(req,res)
 		"err":""
 	};
 
-	if(addUserToGroup(name,group))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "User with this name / email already exists!";
-		res.send(response);
-	}
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('groups');
+			collection.insertOne({_id: {name:name, group:group}},function()
+			{
+				if(err != null)
+				{
+					console.log(err);
+					res.send({success:false,err:err});
+				}
+				else
+				{
+					console.log(result);
+					res.send({sucesss:true,err:""});
+				}
+			});
+	  }
+	});
 });
 
 app.post('/api/grouprmv',function(req,res)
@@ -611,16 +746,30 @@ app.post('/api/grouprmv',function(req,res)
 		"err":""
 	};
 
-	if((name,group))
+	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
-		response.success = true;
-		res.send(response);
-	}
-	else
-	{
-		response.err = "User doesn't exist, or is already not in group!";
-		res.send(response);
-	}
+	  if(err != null)
+	  {
+	    console.log(err);
+	  }
+	  else
+	  {
+	    const collection = client.db('chatserver').collection('groups');
+			collection.deleteOne({_id: {name:name, group:group}},function()
+			{
+				if(err != null)
+				{
+					console.log(err);
+					res.send({success:false,err:err});
+				}
+				else
+				{
+					console.log(result);
+					res.send({sucesss:true,err:""});
+				}
+			});
+	  }
+	});
 });
 
 // JSON Functions
