@@ -30,7 +30,7 @@ export class DashboardComponent implements OnInit {
 
 	selectedroombool:boolean;
 
-	messages:[];
+	messages:Object[];
   message;
   connection;
 
@@ -43,7 +43,10 @@ export class DashboardComponent implements OnInit {
 
   sendMessage(message)
   {
-    this._socketService.sendMessage(this.name,this.selectedgroup,this.selectedroom,message);
+    this._socketService.sendMessage(this.name,this.selectedgroup,this.selectedroom,message).subscribe(
+      response => console.log(response),
+      err => console.log(err)
+    );
   }
 
   ngOnDestroy()
@@ -57,7 +60,7 @@ export class DashboardComponent implements OnInit {
 		this.selectedgroup = group;
 		this.selectedgroupbool = true;
 
-		console.log("No functionality yet.");
+		//console.log("No functionality yet.");
 
 		let data =
 		{
@@ -75,17 +78,27 @@ export class DashboardComponent implements OnInit {
 	getRoomData(room)
 	{
 
-    console.log("panicking a little");
+    //console.log("panicking a little");
 
 		this.selectedroom = room;
 		this.selectedroombool = true;
     console.log("getting room data");
-    this.messages = this._dataService.getRoomData(this.selectedgroup,this.selectedroom)
-    console.log("done.");
-    //console.log(this.messages);
-    this.connection = this._socketService.getMessages(this.selectedgroup,this.selectedroom).subscribe(message=>
+
+    const data =
     {
-      if(message.group == this.selectedGroup && message.room == this.selectedRoom)
+      'group':this.selectedgroup,
+      'room':this.selectedroom
+    };
+
+    this._dataService.getRoomData(data).subscribe(
+      response => this.messages = response["data"],
+      err => console.log(err)
+    );
+    console.log("done.");
+
+    this.connection = this._socketService.getMessages(data.group,data.room).subscribe(message=>
+    {
+      if(message["group"] == this.selectedgroup && message["room"] == this.selectedroom)
       {
         this.messages.push(message);
         this.message = "";

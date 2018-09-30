@@ -21,6 +21,7 @@
     "mongodb": "^3.1.6",
     "node-datetime": "^2.1.0",
     "nodemon": "^1.18.4",
-    "passport-remember-me": "0.0.1"
+    "passport-remember-me": "0.0.1",
+    "socket.io": "^2.1.1"
   }
 }

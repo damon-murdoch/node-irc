@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable,of} from 'rxjs';
 import * as io from 'socket.io-client';
 
 const httpOptions = {
@@ -12,14 +12,14 @@ const httpOptions = {
 })
 export class SocketService {
 
-  private url = 'http://localhost:1337';
+  private url = 'http://127.0.0.1:1337';
   private socket;
 
   constructor(private http:HttpClient) { }
 
   sendMessage(name,group,room,message)
   {
-    console.log(name + ":" + group + ':' + room + ':' + message);
+    //console.log(name + ":" + group + ':' + room + ':' + message);
     console.log('sendMessage()');
 
     const body =
@@ -30,9 +30,13 @@ export class SocketService {
       'msg':message
     };
 
+    console.log(body);
+
     const post =  this.http.post('http://127.0.0.1:1337/api/msg',JSON.stringify(body),httpOptions);
 
     this.socket.emit('add-message',body);
+
+    console.log('Sent message!');
 
     return post;
 }
@@ -46,7 +50,7 @@ export class SocketService {
 
     let observable = new Observable(observer =>
     {
-      this.socket.on('message',data=>{
+      this.socket.on('message',(data)=>{
         console.log("new message")
         observer.next(data);
       })

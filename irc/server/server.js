@@ -3,14 +3,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require("fs");
-const dateTime = require('node-datetime');
+const moment = require('moment');
 const cors = require('cors');
 
 const mc = require('mongodb').MongoClient;
 const mongoaddr = 'mongodb://localhost:27017';
 const sha256 = require('js-sha256').sha256;
-
-// Constants
 
 // App Setup Data
 const app = express();
@@ -37,6 +35,25 @@ app.use(bodyParser.json());
 const host = '127.0.0.1';
 
 const port = 1337;
+
+const io = require('socket.io')(http);
+
+io.on('connection',(socket)=>
+{
+  console.log('New user connected!');
+})
+
+io.on('disconnect',(socket)=>
+{
+  console.log('User disconnected!');
+})
+
+io.on('add-message',(message)=>
+{
+  console.log('message sent:');
+  console.log(message);
+  io.emit('message',{type:'message',text:message});
+})
 
 // Start Server
 const server = http.listen(port,host,function()
@@ -546,7 +563,7 @@ app.post('/api/createroom',function(req,res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('rooms');
-			collection.insertOne({'_id': {'group':group, 'room':room}, 'group':group, 'room':room, log:[]},function(err,result)
+			collection.insertOne({'_id': {'group':group, 'room':room}, 'group':group, 'room':room, 'log':[]},function(err,result)
 			{
 				if(err != null)
 				{
@@ -601,6 +618,8 @@ app.post('/api/room',function(req,res)
 {
 	console.log("request to /api/room");
 
+  console.log(req.body);
+
 	const group = req.body.group;
 	const room = req.body.room;
 
@@ -609,11 +628,12 @@ app.post('/api/room',function(req,res)
 	  if(err != null)
 	  {
 	    console.log(err);
+      res.send({'success':false,'err':err});
 	  }
 	  else
 	  {
-	    const collection = client.db('chatserver').collection('groups');
-			collection.deleteOne({'_id': {'group':group, room:room}},function(err,result)
+	    const collection = client.db('chatserver').collection('rooms');
+			collection.distinct('log',{'_id': {'group':group,'room':room}},function(err,result)
 			{
 				if(err != null)
 				{
@@ -623,11 +643,49 @@ app.post('/api/room',function(req,res)
 				else
 				{
 					console.log(result);
-					res.send({'sucesss':true,'err':""});
+					res.send({'sucesss':true,'data':result});
 				}
 			});
 	  }
 	});
+});
+
+app.post('/api/msg',function(req,res)
+{
+  console.log('request to /api/msg');
+
+  console.log(req.body);
+
+  const name = req.body.name;
+  const group = req.body.group;
+  const room = req.body.room;
+  const msg = req.body.msg;
+
+  mc.connect(mongoaddr,{useNewUrlParser: true},function(err,client)
+  {
+    if(err != null)
+	  {
+	    console.log(err);
+      res.send({'err':err});
+	  }
+	  else
+	  {
+      const collection = client.db('chatserver').collection('rooms');
+      collection.updateOne({_id: {group: group, room:room}},{$push : {'log':{'name':name,'time':moment().format('YYYY-MM-DD:hh:mm:ss'), 'msg':msg}}},function(err,result)
+      {
+        if(err != null)
+        {
+          console.log(err);
+          res.send({'err':err})
+        }
+        else
+        {
+          console.log(result);
+          res.send({'err':result});
+        }
+      });
+    }
+  })
 });
 
 app.post('/api/data',function(req,res)
