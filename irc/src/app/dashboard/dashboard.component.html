@@ -24,12 +24,14 @@
 			</div>
 		</div>
 		<div *ngIf="selectedroombool" id="activechat">
-			<div *ngFor="let message of messages">
-				<p>{{message.name}}@{{message.time}}:{{message.msg}}</p>
+			<div style="height:100px; overflow: auto; background: lightgrey;" id="chatlog">
+				<div *ngFor="let message of messages">
+					<p>{{message.name}}@{{message.time}} - {{message.msg}}</p>
+				</div>
 			</div>
 			<div id="msgbox">
 				<input [(ngModel)]="chatmsg" name = "chatmsg" type="text" placeholder="send message" id="sendmessage" [ngModelOptions]="{standalone: true}">
-				<button (click) = "sendMessage(chatmsg)" type="submit">Register</button>
+				<button (click) = "sendMessage(chatmsg)" type="submit">Send</button>
 			</div>
 		</div>
 	</div>

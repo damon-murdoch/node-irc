@@ -20,6 +20,8 @@ export class SocketService {
   sendMessage(name,group,room,message)
   {
     //console.log(name + ":" + group + ':' + room + ':' + message);
+	this.socket = io(this.url);
+	
     console.log('sendMessage()');
 
     const body =

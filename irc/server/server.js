@@ -41,18 +41,18 @@ const io = require('socket.io')(http);
 io.on('connection',(socket)=>
 {
   console.log('New user connected!');
-})
+  
+  io.on('disconnect',(socket)=>
+  {
+    console.log('User disconnected!');
+  })
 
-io.on('disconnect',(socket)=>
-{
-  console.log('User disconnected!');
-})
-
-io.on('add-message',(message)=>
-{
-  console.log('message sent:');
-  console.log(message);
-  io.emit('message',{type:'message',text:message});
+  io.on('add-message',(message)=>
+  {
+    console.log('message sent:');
+    console.log(message);
+    io.emit('message',{type:'message',text:message});
+  })
 })
 
 // Start Server
