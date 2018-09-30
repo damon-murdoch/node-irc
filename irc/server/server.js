@@ -10,24 +10,6 @@ const mc = require('mongodb').MongoClient;
 const mongoaddr = 'mongodb://localhost:27017';
 const sha256 = require('js-sha256').sha256;
 
-// JSON Files
-
-
-
-const userDIR = './db/users.json';
-const roomDIR = './db/rooms.json';
-const groupDIR = './db/groups.json';
-const superadminDIR = './db/superadmins.json';
-const groupadminDIR = './db/groupadmins.json';
-
-var users = require(userDIR);
-var rooms = require(roomDIR);
-var groups = require(groupDIR);
-var superadmins = require(superadminDIR);
-var groupadmins = require(groupadminDIR);
-
-
-
 // Constants
 
 // App Setup Data
@@ -79,7 +61,7 @@ const server = http.listen(port,host,function()
 			const users = db.collection('users');
 			const superAdmins = db.collection('superAdmins');
 
-			users.insertOne({_id:'super',name:'super',mail:'super@chatserver.net',pass:sha256('super')},function(err,result)
+			users.insertOne({'_id':'super','name':'super',mail:'super@chatserver.net',pass:sha256('super')},function(err,result)
 			{
 				if(err != null)
 				{
@@ -87,11 +69,11 @@ const server = http.listen(port,host,function()
 				}
 				else
 				{
-					console.log("inserted super");
+					console.log(result);
 				}
 			});
 
-			superAdmins.insertOne({_id:'super'},function(err,result)
+			superAdmins.insertOne({'_id':'super'},function(err,result)
 			{
 				if(err != null)
 				{
@@ -99,7 +81,7 @@ const server = http.listen(port,host,function()
 				}
 				else
 				{
-					console.log("promoted super");
+					console.log(result);
 				}
 			})
 		}
@@ -135,7 +117,7 @@ app.post('/api/deluser',function(req,res)
 		else
 		{
 			const collection = client.db('chatserver').collection('users');
-			collection.deleteOne({_id:name},function(err,result)
+			collection.deleteOne({'_id':name},function(err,result)
 			{
 				if(err != null)
 				{
@@ -174,7 +156,7 @@ app.post('/api/register',function(req,res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('users');
-			collection.insertOne({_id:name, name:name, mail:mail,pass: sha256(pass)}, function(err,result)
+			collection.insertOne({'_id':name, 'name':name, mail:mail,pass: sha256(pass)}, function(err,result)
 			{
 				if(err != null)
 				{
@@ -213,7 +195,7 @@ app.post('/api/rmadd',function(req,res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('userGroups');
-			collection.update({_id:{name:name,group:group}},{$push: {rooms: room}},function(err,result)
+			collection.update({'_id':{'name':name,'group':group}},{$push: {rooms: room}},function(err,result)
 			{
 				if(err != null)
 				{
@@ -253,7 +235,7 @@ app.post('/api/rmrmv',function(req,res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('userGroups');
-			collection.update({_id:{name:name,group:group}},{$pull: {rooms: room}},function(err,result)
+			collection.update({'_id':{'name':name,'group':group}},{$pull: {rooms: room}},function(err,result)
 			{
 				if(err != null)
 				{
@@ -293,7 +275,7 @@ app.post('/api/getgroup',function(req,res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('userGroups');
-			collection.find({_id: {name:name,group:group}}).toArray(function(err,docs)
+			collection.find({'_id': {'name':name,'group':group}}).toArray(function(err,docs)
 			{
 				if(err != null)
 				{
@@ -304,11 +286,11 @@ app.post('/api/getgroup',function(req,res)
 					if (docs.length > 0)
 					{
 						data = docs[0].rooms;
-						res.send({admin:false, rooms:data});
+						res.send({'admin':false, rooms:data});
 					}
 					else
 					{
-						res.send({admin:false,rooms:[]})
+						res.send({'admin':false,rooms:[]})
 					}
 				}
 			});
@@ -337,7 +319,7 @@ app.post('/api/superpromote',function(req,res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('superAdmins');
-			collection.insertOne({_id:name},function(err,result)
+			collection.insertOne({'_id':name},function(err,result)
 			{
 				if(err != null)
 				{
@@ -367,17 +349,17 @@ app.post('/api/superdemote',function(req,res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('superAdmins');
-			collection.deleteOne({_id:name},function(err,result)
+			collection.deleteOne({'_id':name},function(err,result)
 			{
 				if(err != null)
 				{
 					console.log(err);
-					res.send({success:false,err:err});
+					res.send({'success':false,'err':err});
 				}
 				else
 				{
 					console.log(result);
-					res.send({sucesss:true,err:""});
+					res.send({'sucesss':true,'err':""});
 				}
 			});
 	  }
@@ -399,17 +381,17 @@ app.post('/api/grouppromote',function(req,res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('groupAdmins');
-			collection.insertOne({_id:name},function(err,result)
+			collection.insertOne({'_id':name},function(err,result)
 			{
 				if(err != null)
 				{
 					console.log(err);
-					res.send({success:false,err:err});
+					res.send({'success':false,'err':err});
 				}
 				else
 				{
 					console.log(result);
-					res.send({sucesss:true,err:""});
+					res.send({'sucesss':true,'err':""});
 				}
 			});
 	  }
@@ -432,17 +414,17 @@ app.post('/api/groupdemote',function(req,res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('groupAdmins');
-			collection.deleteOne({_id:name},function(err,result)
+			collection.deleteOne({'_id':name},function(err,result)
 			{
 				if(err != null)
 				{
 					console.log(err);
-					res.send({success:false,err:err});
+					res.send({'success':false,'err':err});
 				}
 				else
 				{
 					console.log(result);
-					res.send({sucesss:true,err:""});
+					res.send({'sucesss':true,'err':""});
 				}
 			});
 	  }
@@ -455,7 +437,6 @@ app.post('/api/creategroup',function(req,res)
 	console.log("request to /api/creategroup");
 
 	const group = req.body.group;
-	const owner = req.body.name;
 
 	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
 	{
@@ -466,17 +447,17 @@ app.post('/api/creategroup',function(req,res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('groups');
-			collections.insertOne({_id:group,owner:name,rooms:[]},function(err,result)
+			collection.insertOne({'_id':group,'rooms':[]},function(err,result)
 			{
 				if(err != null)
 				{
 					console.log(err);
-					res.send({success:false,err:err});
+					res.send({'success':false,'err':err});
 				}
 				else
 				{
 					console.log(result);
-					res.send({sucesss:true,err:""});
+					res.send({'sucesss':true,'err':""});
 				}
 			});
 	  }
@@ -498,17 +479,17 @@ app.post('/api/deletegroup',function(req,res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('groups');
-			collections.deleteOne({_id:group},function(err,result)
+			collection.deleteOne({'_id':group},function(err,result)
 			{
 				if(err != null)
 				{
 					console.log(err);
-					res.send({success:false,err:err});
+					res.send({'success':false,'err':err});
 				}
 				else
 				{
 					console.log(result);
-					res.send({sucesss:true,err:""});
+					res.send({'sucesss':true,'err':""});
 				}
 			});
 	  }
@@ -532,17 +513,17 @@ app.post('/api/createroom',function(req,res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('rooms');
-			collection.insertOne({_id: {group:group, room:room}, log:[]},function(err,result)
+			collection.insertOne({'_id': {'group':group, 'room':room}, 'group':group, 'room':room, log:[]},function(err,result)
 			{
 				if(err != null)
 				{
 					console.log(err);
-					res.send({success:false,err:err});
+					res.send({'success':false,'err':err});
 				}
 				else
 				{
 					console.log(result);
-					res.send({sucesss:true,err:""});
+					res.send({'sucesss':true,'err':""});
 				}
 			});
 	  }
@@ -565,18 +546,18 @@ app.post('/api/deleteroom',function(req,res)
 	  }
 	  else
 	  {
-	    const collection = client.db('chatserver').collection('groups');
-			collection.deleteOne({_id: {group:group, room:room}},function(err,result)
+	    const collection = client.db('chatserver').collection('rooms');
+			collection.deleteOne({'_id': {'group':group, 'room':room}},function(err,result)
 			{
 				if(err != null)
 				{
 					console.log(err);
-					res.send({success:false,err:err});
+					res.send({'success':false,'err':err});
 				}
 				else
 				{
 					console.log(result);
-					res.send({sucesss:true,err:""});
+					res.send({'sucesss':true,'err':""});
 				}
 			});
 	  }
@@ -599,17 +580,17 @@ app.post('/api/room',function(req,res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('groups');
-			collection.deleteOne({_id: {group:group, room:room}},function(err,result)
+			collection.deleteOne({'_id': {'group':group, room:room}},function(err,result)
 			{
 				if(err != null)
 				{
 					console.log(err);
-					res.send({success:false,err:err});
+					res.send({'success':false,'err':err});
 				}
 				else
 				{
 					console.log(result);
-					res.send({sucesss:true,err:""});
+					res.send({'sucesss':true,'err':""});
 				}
 			});
 	  }
@@ -636,8 +617,9 @@ app.post('/api/data',function(req,res)
 			const groups = client.db('chatserver').collection('groups');
 			const superAdmins = client.db('chatserver').collection('superAdmins');
 			const groupAdmins = client.db('chatserver').collection('groupAdmins');
+      const userGroups = client.db('chatserver').collection('userGroups');
 
-			superAdmins.find({'_id':name},function(err,result)
+			superAdmins.find({'_id':name}).toArray(function(err,result)//function(err,result)
 			{
 				if(err != null)
 				{
@@ -645,15 +627,16 @@ app.post('/api/data',function(req,res)
 				}
 				else if(result.length > 0)
 				{
-					groups.distinct(_id,{},function(err,docs)//.toArray(function(err,docs)
+					groups.distinct('_id',{},function(err,docs)//.toArray(function(err,docs)
 					{
 						console.log(docs);
+            console.log("super admin");
 						res.send({'rank':'super',groups:docs});
 					});
 				}
 				else
 				{
-					groupAdmins.find({_id:name},function(err,result)
+					groupAdmins.find({'_id':name}).toArray(function(err,result)
 					{
 						if(err != null)
 						{
@@ -661,7 +644,7 @@ app.post('/api/data',function(req,res)
 						}
 						else if(result.length > 0)
 						{
-							groups.distinct(_id,{},function(err,docs)//.toArray(function(err,docs)
+							groups.distinct('_id',{},function(err,docs)//.toArray(function(err,docs)
 							{
 								console.log(docs);
 								res.send({'rank':'group',groups:docs})
@@ -669,7 +652,7 @@ app.post('/api/data',function(req,res)
 						}
 						else
 						{
-							groups.distinct('_id',{id: {name:name,group: {$regex:".*"}}},function(err,docs)//.toArray(function(err,docs)
+							userGroups.distinct('group',{'name':name},function(err,docs)//.toArray(function(err,docs)
 							{
 								console.log(docs);
 								res.send({'rank':'standard',groups:docs})
@@ -698,7 +681,7 @@ app.post('/api/login', function(req, res)
 	  else
 	  {
 	    const collection = client.db('chatserver').collection('users');
-			collection.find({_id:name, pass: sha256(pass)}).toArray(function(err,result)
+			collection.find({'_id':name, pass: sha256(pass)}).toArray(function(err,result)
 			{
 				if(err != null)
 				{
@@ -721,7 +704,6 @@ app.post('/api/login', function(req, res)
 	});
 });
 
-
 app.post('/api/groupadd',function(req,res)
 {
 	console.log("request to /api/groupadd");
@@ -742,18 +724,18 @@ app.post('/api/groupadd',function(req,res)
 	  }
 	  else
 	  {
-	    const collection = client.db('chatserver').collection('groups');
-			collection.insertOne({_id: {name:name, group:group}},function()
+	    const collection = client.db('chatserver').collection('userGroups');
+			collection.insertOne({'_id': {'name':name, 'group':group},'name':name, 'group':group},function(err,result)
 			{
 				if(err != null)
 				{
 					console.log(err);
-					res.send({success:false,err:err});
+					res.send({'success':false,'err':err});
 				}
 				else
 				{
 					console.log(result);
-					res.send({sucesss:true,err:""});
+					res.send({'sucesss':true,'err':""});
 				}
 			});
 	  }
@@ -781,18 +763,18 @@ app.post('/api/grouprmv',function(req,res)
 	  }
 	  else
 	  {
-	    const collection = client.db('chatserver').collection('groups');
-			collection.deleteOne({_id: {name:name, group:group}},function()
+	    const collection = client.db('chatserver').collection('userGroups');
+			collection.deleteOne({'name':name, 'group':group},function(err,result)
 			{
 				if(err != null)
 				{
 					console.log(err);
-					res.send({success:false,err:err});
+					res.send({'success':false,'err':err});
 				}
 				else
 				{
 					console.log(result);
-					res.send({sucesss:true,err:""});
+					res.send({'sucesss':true,'err':""});
 				}
 			});
 	  }
