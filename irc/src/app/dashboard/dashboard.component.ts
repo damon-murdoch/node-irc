@@ -16,19 +16,19 @@ export class DashboardComponent implements OnInit {
 
 	name:string;
 	rank:string;
-	
+
 	groups:string[];
-	
+
 	selectedgroup:string;
-	
+
 	selectedgroupbool:boolean;
-	
+
 	rooms:string[];
-	
+
 	selectedroom:string;
-	
+
 	selectedroombool:boolean;
-	
+
 	messages:string[];
 
 	constructor(private _userService:UserService,  private _dataService:DataService, private router: Router) { }
@@ -37,10 +37,10 @@ export class DashboardComponent implements OnInit {
 	{
 		this.selectedgroup = group;
 		this.selectedgroupbool = true;
-		
+
 		console.log("No functionality yet.");
-		
-		let data = 
+
+		let data =
 		{
 			name:this.name,
 			group:group
@@ -52,17 +52,17 @@ export class DashboardComponent implements OnInit {
 			}
 		);
 	}
-	
+
 	getRoomData(room)
 	{
 		this.selectedroom = room;
 		this.selectedroombool = true;
-		
+
 		console.log("No chat functionality yet.");
-		
+
 		/*
-		
-		let data = 
+
+		let data =
 		{
 			name:this.name,
 			group:this.selectedgroup,
@@ -71,40 +71,42 @@ export class DashboardComponent implements OnInit {
 		this._dataService.getRoomData(data).subscribe(
 			data =>
 			{
-				
+
 				//this.messages = data;
 			}
 		);
 		*/
 	}
-	
+
 	ngOnInit()
 	{
 		this.selectedgroupbool = false;
 		this.selectedroombool = false;
-		
+
 		if (!localStorage.name || !localStorage.pass)
 		{
 			this.router.navigate(['/']);
-		} 
-	
-		let data = 
+		}
+
+		let data =
 		{
 			name:localStorage["name"]
 		};
-		
+
 		this._dataService.getData(data).subscribe(
 			data =>
 			{
 				this.name = localStorage["name"];
 				this.rank = data["rank"];
 				this.groups = data["groups"];
-				
+
+        console.log(this.name + ":" + this.rank);
+
 				console.log(this.groups);
 			}
 		);
 	}
-	
+
 	logout()
 	{
 		localStorage.clear();

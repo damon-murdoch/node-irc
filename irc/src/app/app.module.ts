@@ -12,6 +12,7 @@ import {HttpClientModule } from '@angular/common/http';
 import { SuperadmintoolbarComponent } from './superadmintoolbar/superadmintoolbar.component';
 import { GroupadmintoolbarComponent } from './groupadmintoolbar/groupadmintoolbar.component';
 import { GroupmenuComponent } from './groupmenu/groupmenu.component';
+import { ChatComponent } from './chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { GroupmenuComponent } from './groupmenu/groupmenu.component';
     RegisterComponent,
     SuperadmintoolbarComponent,
     GroupadmintoolbarComponent,
-    GroupmenuComponent
+    GroupmenuComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule,

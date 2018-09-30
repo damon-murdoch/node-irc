@@ -1,35 +1,40 @@
 <div id="dashboard">
-	
+
 	<h3> Dashboard </h3>
 	<h4> Welcome, {{name}} </h4>
-	
+
 	<p> User Privileges: {{rank}} </p>
-	
-	<div *ngIf="rank=='super'">
+
+	<div *ngIf="(rank=='super')">
 		<app-superadmintoolbar></app-superadmintoolbar>
 	</div>
-	
-	<div *ngIf="rank == 'group' || rank == 'super'">
+
+	<div *ngIf="((rank == 'group') || (rank == 'super'))">
 		<app-groupadmintoolbar></app-groupadmintoolbar>
 	</div>
-	
+
 	<div id="grpdiv">
 		<h4> Groups: </h4>
 		<div *ngFor="let group of groups">
 			<h5 (click) = getGroupData(group)>group::{{group}}</h5>
 		</div>
-		<div *ngIf="selectedgroupbool" id="activegroup"> 
+		<div *ngIf="selectedgroupbool" id="activegroup">
 			<div *ngFor="let room of rooms">
 				<a (click) = getRoomData(room)>{{selectedgroup}}::{{room}}</a>
 			</div>
 		</div>
 		<div *ngIf="selectedroombool" id="activechat">
-			<p> Chat messages go here lol</p>
-			<input type="text" placeholder="send message" id="sendmessage">
+			<div *ngFor="let message of messages">
+				<p><b>{{username}}@{{sendtime}}:</b>{{message}}</p>
+			</div>
+			<form (submit)="sendMessage(group,room,chatmsg)">
+				<input [(ngModel)]="chatmsg" name = "chatmsg" type="text" placeholder="send message" id="sendmessage">
+				<input [(ngModel)]="chatsub" name = "chatsub" type="submit" placeholder="submit" id="submit">
+			</form>
 		</div>
 	</div>
-	
-	<div id="logoutdiv"> 
+
+	<div id="logoutdiv">
 		<a href="#" (click)="logout()"> Log Out </a>
 	</div>
 </div>
