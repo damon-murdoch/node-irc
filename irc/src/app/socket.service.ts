@@ -1,21 +1,41 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs';
 import * as io from 'socket.io-client';
+
+const httpOptions = {
+	headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocketService {
 
-  constructor() { }
+  private url = 'http://localhost:1337';
+  private socket;
+
+  constructor(private http:HttpClient) { }
 
   sendMessage(name,group,room,message)
   {
-    console.log(group + ':' + room + ':' + message);
+    console.log(name + ":" + group + ':' + room + ':' + message);
     console.log('sendMessage()');
 
-    this.socket.emit('add-message',{'name': name, 'group':group, 'room':room, 'message':message});
-  }
+    const body =
+    {
+      'name': name,
+      'group':group,
+      'room':room,
+      'msg':message
+    };
+
+    const post =  this.http.post('http://127.0.0.1:1337/api/msg',JSON.stringify(body),httpOptions);
+
+    this.socket.emit('add-message',body);
+
+    return post;
+}
 
   getMessages(group,room)
   {

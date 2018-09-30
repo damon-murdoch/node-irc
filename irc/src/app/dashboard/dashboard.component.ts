@@ -41,9 +41,9 @@ export class DashboardComponent implements OnInit {
     private router: Router
   ) { }
 
-  sendMessage(group,room,message)
+  sendMessage(message)
   {
-    this._socketService.sendMessage(this.name,group,room,message);
+    this._socketService.sendMessage(this.name,this.selectedgroup,this.selectedroom,message);
   }
 
   ngOnDestroy()
@@ -74,10 +74,16 @@ export class DashboardComponent implements OnInit {
 
 	getRoomData(room)
 	{
+
+    console.log("panicking a little");
+
 		this.selectedroom = room;
 		this.selectedroombool = true;
-    this.messages = getRoomData(this.selectedGroup,this.selectedRoom)
-    this.connection = this._socketService.getMessages().subscribe(message=>
+    console.log("getting room data");
+    this.messages = this._dataService.getRoomData(this.selectedgroup,this.selectedroom)
+    console.log("done.");
+    //console.log(this.messages);
+    this.connection = this._socketService.getMessages(this.selectedgroup,this.selectedroom).subscribe(message=>
     {
       if(message.group == this.selectedGroup && message.room == this.selectedRoom)
       {
