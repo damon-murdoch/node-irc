@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../user.service';
 import { DataService } from '../data.service';
+import { SocketService } from '../socket.service';
 import { Router } from '@angular/router';
 
 import {SuperadmintoolbarComponent} from '../superadmintoolbar/superadmintoolbar.component';
@@ -29,9 +30,27 @@ export class DashboardComponent implements OnInit {
 
 	selectedroombool:boolean;
 
-	messages:string[];
+	messages:[];
+  message;
+  connection;
 
-	constructor(private _userService:UserService,  private _dataService:DataService, private router: Router) { }
+	constructor(
+    private _userService:UserService,
+    private _dataService:DataService,
+    private _socketService:SocketService,
+    private router: Router
+  ) { }
+
+  sendMessage(group,room,message)
+  {
+    this._socketService.sendMessage(this.name,group,room,message);
+  }
+
+  ngOnDestroy()
+  {
+    if(this.connection)
+      this.connection.unsubscribe();
+  }
 
 	getGroupData(group)
 	{
@@ -57,25 +76,15 @@ export class DashboardComponent implements OnInit {
 	{
 		this.selectedroom = room;
 		this.selectedroombool = true;
-
-		console.log("No chat functionality yet.");
-
-		/*
-
-		let data =
-		{
-			name:this.name,
-			group:this.selectedgroup,
-			room:room
-		}
-		this._dataService.getRoomData(data).subscribe(
-			data =>
-			{
-
-				//this.messages = data;
-			}
-		);
-		*/
+    this.messages = getRoomData(this.selectedGroup,this.selectedRoom)
+    this.connection = this._socketService.getMessages().subscribe(message=>
+    {
+      if(message.group == this.selectedGroup && message.room == this.selectedRoom)
+      {
+        this.messages.push(message);
+        this.message = "";
+      }
+    });
 	}
 
 	ngOnInit()
