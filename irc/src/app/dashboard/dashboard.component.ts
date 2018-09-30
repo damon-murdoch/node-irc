@@ -96,12 +96,7 @@ export class DashboardComponent implements OnInit {
     {
 	  console.log("new message to recieve");
 	  this._dataService.getRoomData(data).subscribe(
-		response => 
-		{
-			this.messages = response["data"];
-			
-			
-		},
+		response => this.messages = response["data"],
 		err => console.log(err)
 	  );
     });

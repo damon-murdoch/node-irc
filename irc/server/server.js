@@ -616,6 +616,14 @@ app.post('/api/deleteroom',function(req,res)
 
 app.post('/api/room',function(req,res)
 {
+	const compare = (a,b) => {
+	  if (a.time < b.time)
+		return -1;
+	  if (a.time > b.time)
+		return 1;
+	  return 0;
+	};
+	
 	console.log("request to /api/room");
 
   console.log(req.body);
@@ -643,6 +651,8 @@ app.post('/api/room',function(req,res)
 				else
 				{
 					////console.log(result);
+					//console.log(result);
+					result.sort(compare);
 					res.send({'sucesss':true,'data':result});
 				}
 			});
@@ -797,6 +807,7 @@ app.post('/api/login', function(req, res)
 
 app.post('/api/groupadd',function(req,res)
 {
+	
 	console.log("request to /api/groupadd");
 
 	const name = req.body.name;
@@ -865,6 +876,7 @@ app.post('/api/grouprmv',function(req,res)
 				else
 				{
 					////console.log(result);
+					
 					res.send({'sucesss':true,'err':""});
 				}
 			});
