@@ -42,12 +42,12 @@ io.on('connection',(socket)=>
 {
   console.log('New user connected!');
   
-  io.on('disconnect',(socket)=>
+  socket.on('disconnect',(socket)=>
   {
     console.log('User disconnected!');
   })
 
-  io.on('add-message',(message)=>
+  socket.on('add-message',(message)=>
   {
     console.log('message sent:');
     console.log(message);
@@ -62,7 +62,7 @@ const server = http.listen(port,host,function()
 	{
 		if(err != null)
 		{
-			console.log(err);
+			////console.log(err);
 		}
 		else
 		{
@@ -82,11 +82,11 @@ const server = http.listen(port,host,function()
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 				}
 			});
 
@@ -94,11 +94,11 @@ const server = http.listen(port,host,function()
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 				}
 			})
 		}
@@ -129,7 +129,7 @@ app.post('/api/deluser',function(req,res)
 	{
 		if(err != null)
 		{
-			console.log(err);
+			////console.log(err);
 		}
 		else
 		{
@@ -138,11 +138,11 @@ app.post('/api/deluser',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 				}
 			});
 		}
@@ -168,7 +168,7 @@ app.post('/api/register',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -177,11 +177,11 @@ app.post('/api/register',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 				}
 				else
 				{
-					console.log(result.ops);
+					//console.log(result.ops);
 				}
 			});
 	  }
@@ -209,7 +209,7 @@ app.post('/api/rmadd',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -218,11 +218,11 @@ app.post('/api/rmadd',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 				}
 			});
 	  }
@@ -249,7 +249,7 @@ app.post('/api/rmrmv',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -258,11 +258,11 @@ app.post('/api/rmrmv',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 				}
 			});
 	  }
@@ -291,7 +291,7 @@ app.post('/api/getgroup',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -364,7 +364,7 @@ app.post('/api/superpromote',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -373,11 +373,11 @@ app.post('/api/superpromote',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 				}
 			});
 	  }
@@ -394,7 +394,7 @@ app.post('/api/superdemote',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -403,12 +403,12 @@ app.post('/api/superdemote',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 					res.send({'success':false,'err':err.errmsg});
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 					res.send({'sucesss':true,'err':""});
 				}
 			});
@@ -426,7 +426,7 @@ app.post('/api/grouppromote',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -435,12 +435,12 @@ app.post('/api/grouppromote',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 					res.send({'success':false,'err':err.errmsg});
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 					res.send({'sucesss':true,'err':""});
 				}
 			});
@@ -459,7 +459,7 @@ app.post('/api/groupdemote',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -468,12 +468,12 @@ app.post('/api/groupdemote',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 					res.send({'success':false,'err':err.errmsg});
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 					res.send({'sucesss':true,'err':""});
 				}
 			});
@@ -492,7 +492,7 @@ app.post('/api/creategroup',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -501,12 +501,12 @@ app.post('/api/creategroup',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 					res.send({'success':false,'err':err.errmsg});
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 					res.send({'sucesss':true,'err':""});
 				}
 			});
@@ -524,7 +524,7 @@ app.post('/api/deletegroup',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -533,12 +533,12 @@ app.post('/api/deletegroup',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 					res.send({'success':false,'err':err.errmsg});
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 					res.send({'sucesss':true,'err':""});
 				}
 			});
@@ -558,7 +558,7 @@ app.post('/api/createroom',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -567,12 +567,12 @@ app.post('/api/createroom',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 					res.send({'success':false,'err':err.errmsg});
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 					res.send({'sucesss':true,'err':""});
 				}
 			});
@@ -592,7 +592,7 @@ app.post('/api/deleteroom',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -601,12 +601,12 @@ app.post('/api/deleteroom',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 					res.send({'success':false,'err':err.errmsg});
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 					res.send({'sucesss':true,'err':""});
 				}
 			});
@@ -627,7 +627,7 @@ app.post('/api/room',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
       res.send({'success':false,'err':err});
 	  }
 	  else
@@ -637,12 +637,12 @@ app.post('/api/room',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 					res.send({'success':false,'err':err.errmsg});
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 					res.send({'sucesss':true,'data':result});
 				}
 			});
@@ -665,7 +665,7 @@ app.post('/api/msg',function(req,res)
   {
     if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
       res.send({'err':err});
 	  }
 	  else
@@ -675,12 +675,12 @@ app.post('/api/msg',function(req,res)
       {
         if(err != null)
         {
-          console.log(err);
+          ////console.log(err);
           res.send({'err':err})
         }
         else
         {
-          console.log(result);
+          ////console.log(result);
           res.send({'err':result});
         }
       });
@@ -700,7 +700,7 @@ app.post('/api/data',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -767,7 +767,7 @@ app.post('/api/login', function(req, res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -776,7 +776,7 @@ app.post('/api/login', function(req, res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 				}
 				else
 				{
@@ -788,7 +788,7 @@ app.post('/api/login', function(req, res)
 					{
 						res.send({"loggedIn":false,"err":1});
 					}
-					console.log(result);
+					////console.log(result);
 				}
 			});
 	  }
@@ -811,7 +811,7 @@ app.post('/api/groupadd',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -820,12 +820,12 @@ app.post('/api/groupadd',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 					res.send({'success':false,'err':err.errmsg});
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 					res.send({'sucesss':true,'err':""});
 				}
 			});
@@ -850,7 +850,7 @@ app.post('/api/grouprmv',function(req,res)
 	{
 	  if(err != null)
 	  {
-	    console.log(err);
+	    ////console.log(err);
 	  }
 	  else
 	  {
@@ -859,12 +859,12 @@ app.post('/api/grouprmv',function(req,res)
 			{
 				if(err != null)
 				{
-					console.log(err);
+					////console.log(err);
 					res.send({'success':false,'err':err.errmsg});
 				}
 				else
 				{
-					console.log(result);
+					////console.log(result);
 					res.send({'sucesss':true,'err':""});
 				}
 			});

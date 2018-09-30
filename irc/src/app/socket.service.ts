@@ -19,8 +19,6 @@ export class SocketService {
 
   sendMessage(name,group,room,message)
   {
-    //console.log(name + ":" + group + ':' + room + ':' + message);
-	this.socket = io(this.url);
 	
     console.log('sendMessage()');
 
@@ -52,10 +50,11 @@ export class SocketService {
 
     let observable = new Observable(observer =>
     {
+	  //this.socket = io();
       this.socket.on('message',(data)=>{
-        console.log("new message")
+        console.log("new message");
         observer.next(data);
-      })
+      });
       return () =>
       {
         this.socket.disconnect();

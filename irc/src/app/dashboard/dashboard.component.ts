@@ -31,15 +31,15 @@ export class DashboardComponent implements OnInit {
 	selectedroombool:boolean;
 
 	messages:Object[];
-  message;
-  connection;
+	message;
+	connection;
 
 	constructor(
-    private _userService:UserService,
-    private _dataService:DataService,
-    private _socketService:SocketService,
-    private router: Router
-  ) { }
+	  private _userService:UserService,
+	  private _dataService:DataService,
+	  private _socketService:SocketService,
+	  private router: Router
+	) { }
 
   sendMessage(message)
   {
@@ -60,8 +60,6 @@ export class DashboardComponent implements OnInit {
 		this.selectedgroup = group;
 		this.selectedgroupbool = true;
 
-		//console.log("No functionality yet.");
-
 		let data =
 		{
 			name:this.name,
@@ -77,12 +75,9 @@ export class DashboardComponent implements OnInit {
 
 	getRoomData(room)
 	{
-
-    //console.log("panicking a little");
-
 		this.selectedroom = room;
 		this.selectedroombool = true;
-    console.log("getting room data");
+		console.log("getting room data");
 
     const data =
     {
@@ -96,13 +91,19 @@ export class DashboardComponent implements OnInit {
     );
     console.log("done.");
 
-    this.connection = this._socketService.getMessages(data.group,data.room).subscribe(message=>
+    this.connection = this._socketService.getMessages(data.group,data.room).subscribe(
+	message=>
     {
-      if(message["group"] == this.selectedgroup && message["room"] == this.selectedroom)
-      {
-        this.messages.push(message);
-        this.message = "";
-      }
+	  console.log("new message to recieve");
+	  this._dataService.getRoomData(data).subscribe(
+		response => 
+		{
+			this.messages = response["data"];
+			
+			
+		},
+		err => console.log(err)
+	  );
     });
 	}
 
