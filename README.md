@@ -1,10 +1,11 @@
 # node-irc
 
-NodeJS IRC server for 2811ICT Assignment One
+NodeJS IRC server for 2811ICT Assignment One (Updated For Assignment Two)
 
 Developer: Damon Murdoch
 
-Date Written: 3/09/2018
+First Written: 3/09/2018\
+Updated: 1/10/2018
 
 # Git Architecture
 
@@ -12,48 +13,40 @@ All of the files for this project are situated in the 'irc' folder, which is the
 The 'dist' folder contains the compiled version of the angular project, which is referenced by the Node backend software \
 in the 'server' folder. All of the source code for the angular front end software is within the 'src' folder.
 
-# Data Structures
+# Data Structures (MongoDB Tables)
 
-The data structures used in this project will be defined below.
+The data structures used in this project will be defined below.\
 
-1. 
-Name: Users\
-Description: Stores the information related to all of the users in the system.\
-Fields:\
-name: string, User's name\
-mail: string, User's email address\
-pass: string, User's password\
-salt: string, Security salt value (null for testing purposes atm)\
-groups: UserGroup[], Stores the groups (and related rooms) a user is permitted to view
+1. Users\
+_id: name of user\
+name: name of user (for compatibility reasons)\
+mail: user email address\
+pass: sha256 encrypted password
 
-2. 
-Name: UserGroup\
-Descriptions: Stores the name of the group and all channels within it the user is able to see\
-Fields: \
-group: string, Group name\
-rooms: string[], names of rooms user can see
+2. Groups
 
-3. 
-Name: Groups\
-Description: Stores the data for each group object in the system\
-Fields:
-group: string, Group name\
-rooms: Room[], list of rooms
+_id: name of group\
+rooms: string[] of room names
 
-4. 
-Name: Rooms\
-Description: Stores the information for each room in the system\
-Fields:\
-room: string, Room name\
-log: Message[], room message history
+3. Rooms
 
-5. 
-Name: Messages\
-Description: Stores the data for messages sent in a room\
-Fields:\
-user: string, Username of user who sent the message\
-time: string, Time message was sent\
-msg: string, contents of sent message
+_id: {'group':group,'room':room} - unique identifier for group,room\
+group: group name\
+room: room name\
+log: Object[], message log , format: {name:name, time:time,, msg:msg}
+
+4. groupAdmins
+
+_id: name of user
+
+5. superAdmins
+
+_id: name of user
+
+6. userGroups
+
+_id: {name:name,group:group}, unique identifier for user, group\
+rooms: [], list of rooms in group user can see
 
 # Rest API
 
@@ -66,7 +59,7 @@ name: string, name of user to delete\
 Return:\
 succes: boolean , If update succeeded or not\
 err: string , Error Message if error\
-Result: Deletes the user with the name 'name' from the file system, if it exists and returns an error if it does not.
+Result: Deletes the user with the name 'name' from the database, if it exists and returns an error if it does not.
 
 2.
 Target: /api/register\
@@ -77,8 +70,7 @@ pass: string, password of user\
 Return:\
 succes: boolean , If update succeeded or not\
 err: string , Error Message if error\
-Result: Inserts the user with the given details in the file system as long as their username / email / password contains
-at least one letter, spaces are not used and the name is not already taken.
+Result: Inserts the user with the given details in the database assuming no duplicates
 
 3.
 Target: /api/rmadd\
@@ -197,8 +189,7 @@ group: string, name of group\
 room: string, name of room\
 Return:\
 log: Message[], chatlog of chat\
-Result: Returns the chatlog of the requested chatroom 'room' in group 'group'. This route isn't used by the current 
-application so has not been proofed yet.
+Result: Returns the chatlog of the requested chatroom 'room' in group 'group'.
 
 15.
 Target: /api/data\
@@ -207,7 +198,7 @@ name: string, name of user to retrieve data of
 Return:\
 rank: string, the rank of the user. can be standard, super or group.
 groups: string[], list of groups the user has been added to.
-Result: Returns the group rank, or role of the user and all groups they are associated with.  If user is group or super admin, all groups are returned.
+Result: Returns the group rank, or role of the user and all groups they are associated with.  If user is group or super admin or group admin, all groups are returned.
 
 16. 
 Target: /api/login\
