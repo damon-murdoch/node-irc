@@ -7,6 +7,10 @@ Developer: Damon Murdoch
 First Written: 3/09/2018\
 Updated: 1/10/2018
 
+# Test Instructions
+
+To test the program, simply run 'npm test' in the server directory of the project when all dependencies are installed. 
+
 # Git Architecture
 
 All of the files for this project are situated in the 'irc' folder, which is the Angular project root directory.\
@@ -232,11 +236,11 @@ Result: Removes user 'name' from group 'group' if both exist and user is already
 
 # Angular Architecture
 
-1. Components\
+1. Components
 
-a. Dashboard\
+a. Dashboard
 
-Data:\
+Data:
 
 name: string, Name of logged in user\
 rank: string, Role of logged in user\
@@ -245,22 +249,22 @@ selectedgroupbool: boolean, false if no group has been selected yet\
 rooms: string[], array of room names in group 'selectedgroup' that are visible to user\
 selectedroom: string, name of currently selected room\
 selectedroombool: boolean, false if no room has been selected yet\
-messages: string[], list of messages in the history of 'room'\
+messages: string[], list of messages in the history of 'room'
 
-Functions:\
+Functions:
 
 getGroupData(group: string): void\
 getRoomData(room: string): void\
-ngOnInit(void): void\
+ngOnInit(void): void
 
 b. GroupAdminToolbar
 
-Data:\
+Data:
 
 hidemsg: String, message displayed when hiding / unhiding group admin toolbar\
 errormsg: String, message displayed as notification of function call\
 
-Functions:\
+Functions:
 
 createUser(name: string,mail:string,pass:string,salt:string): void\
 promoteGroupAdmin(name: string): void\
@@ -281,14 +285,14 @@ c. Login
 Data:\
 Functions:\
 loginUser(name: string, pass: string): void\
-ngOnInit(void): void\
+ngOnInit(void): void
 
 d. Register
 
 Data:\
 Functions:\
 createUser(name: string, mail: string, pass: string, salt: string): void\
-ngOnInit(void): void\
+ngOnInit(void): void
 
 e. Super Admin Toolbar
 
@@ -296,7 +300,7 @@ Data:\
 
 hide: boolean,\
 hidemsg: string,\
-errormsg: string,\
+errormsg: string,
 
 Functions:\
 
@@ -304,7 +308,7 @@ promoteUser(name: string): void\
 demoteUser(name: string): void\
 deleteUser(name: string): void\
 hideToggle(void): void\
-ngOnInit(void): void\
+ngOnInit(void): void
 
 2. Models
 
@@ -314,7 +318,7 @@ Fields:\
 name: string,\
 mail: string,\
 pass: string,\
-salt: string\
+salt: string
 
 3. Services
 
@@ -331,7 +335,7 @@ getRoomData(data: JSON{name: string, group: string, room: string});\
 createGroup(data: JSON{group: string});\
 deleteGroup(data: JSON{group: string});\
 createRoom(data: JSON{group: string, room: string});\
-deleteRoom(data: JSON{group: string, room: string});\
+deleteRoom(data: JSON{group: string, room: string});
 
 b. User\
 Data:\
