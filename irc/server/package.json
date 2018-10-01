@@ -4,7 +4,7 @@
   "description": "Damon Murdoch's Assignment 1 for Web Programming\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C, making the dashboard and overarching control systems for an irc chat program using NodeJS",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/mocha"
   },
   "keywords": [
     "irc"
@@ -12,16 +12,24 @@
   "author": "Damon Murdoch (s2970548)",
   "license": "ISC",
   "dependencies": {
+    "assert": "^1.4.1",
     "body-parser": "^1.18.3",
+    "chai": "^4.2.0",
+    "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
     "express": "^4.16.3",
     "i": "^0.3.6",
     "jquery": "^3.3.1",
     "js-sha256": "^0.9.0",
     "mongodb": "^3.1.6",
+    "nock": "^10.0.0",
     "node-datetime": "^2.1.0",
     "nodemon": "^1.18.4",
     "passport-remember-me": "0.0.1",
+    "should": "^13.2.3",
     "socket.io": "^2.1.1"
+  },
+  "devDependencies": {
+    "supertest": "^3.3.0"
   }
 }
