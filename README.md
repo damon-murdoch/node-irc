@@ -4,7 +4,7 @@ NodeJS IRC server for 2811ICT Assignment One (Updated For Assignment Two)
 
 Developer: Damon Murdoch
 
-First Written: 3/09/2018
+First Written: 3/09/2018\
 Updated: 1/10/2018
 
 # Git Architecture
@@ -13,7 +13,7 @@ All of the files for this project are situated in the 'irc' folder, which is the
 The 'dist' folder contains the compiled version of the angular project, which is referenced by the Node backend software \
 in the 'server' folder. All of the source code for the angular front end software is within the 'src' folder.
 
-# Data Structures (MongoDB Tables)\
+# Data Structures (MongoDB Tables)
 
 The data structures used in this project will be defined below.\
 
