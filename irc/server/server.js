@@ -38,15 +38,20 @@ const port = 1337;
 
 const io = require('socket.io')(http);
 
+// Client Connect - Create new socket connection
 io.on('connection',(socket)=>
 {
   console.log('New user connected!');
+  io.emit('message',{type:'announcement',text:'New user connected!'});
   
+  // Client Disconnect
   socket.on('disconnect',(socket)=>
   {
     console.log('User disconnected!');
+  io.emit('message',{type:'announcement',text:'User disconnected!'});
   })
 
+  // Recieve message from socket connection and broadcast it
   socket.on('add-message',(message)=>
   {
     console.log('message sent:');
@@ -58,608 +63,593 @@ io.on('connection',(socket)=>
 // Start Server
 const server = http.listen(port,host,function()
 {
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-		if(err != null)
-		{
-			////console.log(err);
-		}
-		else
-		{
-			const db = client.db('chatserver');
+  
+  // Connect to MongoDB and create required database connections - also inserting super user if he does not already exist
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      console.log(err);
+    }
+    else
+    {
+      const db = client.db('chatserver');
 
-			db.createCollection('users');
-			db.createCollection('groups');
-			db.createCollection('rooms');
-			db.createCollection('groupAdmins');
-			db.createCollection('superAdmins');
-			db.createCollection('userGroups');
+      db.createCollection('users');
+      db.createCollection('groups');
+      db.createCollection('rooms');
+      db.createCollection('groupAdmins');
+      db.createCollection('superAdmins');
+      db.createCollection('userGroups');
 
-			const users = db.collection('users');
-			const superAdmins = db.collection('superAdmins');
+      const users = db.collection('users');
+      const superAdmins = db.collection('superAdmins');
 
-			users.insertOne({'_id':'super','name':'super',mail:'super@chatserver.net',pass:sha256('super')},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-				}
-				else
-				{
-					////console.log(result);
-				}
-			});
-
-			superAdmins.insertOne({'_id':'super'},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-				}
-				else
-				{
-					////console.log(result);
-				}
-			})
-		}
-	});
-	console.log('Server is listening on ' + host + ':' + port);
+      users.insertOne({'_id':'super','name':'super',mail:'super@chatserver.net',pass:sha256('super')},function(err,result){});
+      superAdmins.insertOne({'_id':'super'},function(err,result){});
+    }
+  });
+  console.log('Server is listening on ' + host + ':' + port);
 });
 
-// Function Declarations
+// Route Declarations
 
-// Page Actions (get)
-
-// Index - Login Page
+// If project is compiled, send the angular main page on any directory location
 
 app.get('/*',function(req,res)
 {
-	res.sendFile('index.html',{'root':'../dist/irc/'});
+  res.sendFile('index.html',{'root':'../dist/irc/'});
 });
 
-// Page Actions (post)
+// Delete a user from the 'users' table
 
 app.post('/api/deluser',function(req,res)
 {
-	console.log("request to /api/deluser");
+  console.log("request to /api/deluser");
 
-	const name = req.body.name;
+  const name = req.body.name;
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-		if(err != null)
-		{
-			////console.log(err);
-		}
-		else
-		{
-			const collection = client.db('chatserver').collection('users');
-			collection.deleteOne({'_id':name},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-				}
-				else
-				{
-					////console.log(result);
-				}
-			});
-		}
-	});
-	res.send({"success":true,"err":""})
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('users');
+      collection.deleteOne({'_id':name},function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+          res.send({'success':true,'err':''});
+        }
+      });
+    }
+  });
 });
+
+// Register a new user in the users table
 
 app.post('/api/register',function(req,res)
 {
 
-	console.log("request to /api/register");
+  console.log("request to /api/register");
 
-	var response = {
-		"success":false,
-		"err":""
-	};
+  var response = {
+    "success":false,
+    'err':""
+  };
 
-	const name = req.body.name;
-	const mail = req.body.mail;
-	const pass = req.body.pass;
+  const name = req.body.name;
+  const mail = req.body.mail;
+  const pass = req.body.pass;
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('users');
-			collection.insertOne({'_id':name, 'name':name, mail:mail,pass: sha256(pass)}, function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-				}
-				else
-				{
-					//console.log(result.ops);
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('users');
+      collection.insertOne({'_id':name, 'name':name, mail:mail,pass: sha256(pass)}, function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+          res.send({'success':true,'err':result.ops})
+        }
+      });
+    }
+  });
 
 });
+
+// add a user to a given room in a given channel
 
 app.post('/api/rmadd',function(req,res)
 {
-	console.log("request to /api/rmadd");
+  console.log("request to /api/rmadd");
 
-	const name = req.body.name;
-	const group = req.body.group;
-	const room = req.body.room;
+  const name = req.body.name;
+  const group = req.body.group;
+  const room = req.body.room;
 
   console.log(req.body);
 
-	var response =
-	{
-		"success":false,
-		"err":""
-	};
+  var response =
+  {
+    "success":false,
+    'err':""
+  };
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('userGroups');
-			collection.updateOne({'_id':{'name':name,'group':group}},{$push: {rooms: room}},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-				}
-				else
-				{
-					////console.log(result);
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('userGroups');
+      collection.updateOne({'_id':{'name':name,'group':group}},{$push: {rooms: room}},function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+          res.send({'success':true,'err':result});
+        }
+      });
+    }
+  });
 
-	res.send(response);
+  res.send(response);
 });
+
+// remove a user from a given room in a given channel
 
 app.post('/api/rmrmv',function(req,res)
 {
-	console.log("request to /api/rmrmv");
+  console.log("request to /api/rmrmv");
 
-	const name = req.body.name;
-	const group = req.body.group;
-	const room = req.body.room;
+  const name = req.body.name;
+  const group = req.body.group;
+  const room = req.body.room;
 
-	var response =
-	{
-		"success":false,
-		"err":""
-	};
+  var response =
+  {
+    "success":false,
+    'err':""
+  };
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('userGroups');
-			collection.updateOne({'_id':{'name':name,'group':group}},{$pull: {rooms: room}},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-				}
-				else
-				{
-					////console.log(result);
-				}
-			});
-	  }
-	});
-
-	res.send(response);
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('userGroups');
+    collection.updateOne({'_id':{'name':name,'group':group}},{$pull: {rooms: room}},function(err,result)
+    {
+      if(err != null)
+      {
+      res.send({'success':false,'err':err.errmsg});
+      }
+      else
+      {
+      res.send({'success':true,'err':result});
+      }
+    });
+    }
+  });
 });
+
+// sends the rooms visible to a given user within the requested group
 
 app.post('/api/getgroup',function(req,res)
 {
 
-	console.log("request to /api/getgroup");
+  console.log("request to /api/getgroup");
 
-	const name = req.body.name;
-	const group = req.body.group;
+  const name = req.body.name;
+  const group = req.body.group;
 
-  console.log(req.body);
+    console.log(req.body);
 
-	var response =
-	{
-		"admin":false,
-		"rooms":[]
-	};
+  var response =
+  {
+    "admin":false,
+    "rooms":[]
+  };
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
       const users = client.db('chatserver').collection('users');
-			const groups = client.db('chatserver').collection('groups');
+      const groups = client.db('chatserver').collection('groups');
       const rooms = client.db('chatserver').collection('rooms');
-			const superAdmins = client.db('chatserver').collection('superAdmins');
-			const groupAdmins = client.db('chatserver').collection('groupAdmins');
+      const superAdmins = client.db('chatserver').collection('superAdmins');
+      const groupAdmins = client.db('chatserver').collection('groupAdmins');
       const userGroups = client.db('chatserver').collection('userGroups');
 
       superAdmins.find({'_id':name}).toArray(function(err,result)//function(err,result)
       {
-      	if(err != null)
-      	{
-      		res.send({"err":err});
-      	}
+        if(err != null)
+        {
+          res.send({'err':err});
+        }
         else if(result.length > 0)
         {
-          //groups.distinct('rooms',{'_id':group},function(err,docs)//.toArray(function(err,docs)
             rooms.distinct('room',{'group':group},function(err,docs)
           {
             console.log(docs);
             res.send({"admin":false,rooms:docs})
           });
         }
-      	else
-      	{
-      		groupAdmins.find({'_id':name}).toArray(function(err,result)
-      		{
-      			if(err != null)
-      			{
-      				res.send({"err":err});
-      			}
-      			else if(result.length > 0)
-      			{
-      				rooms.distinct('room',{'group':group},function(err,docs)//.toArray(function(err,docs)
-      				{
-      					console.log(docs);
-      					res.send({"admin":false,rooms:docs})
-      				});
-      			}
-      			else
-      			{
-      				userGroups.distinct('rooms',{'name':name,'group':group},function(err,docs)//.toArray(function(err,docs)
-      				{
-      					console.log(docs);
-      					res.send({"admin":false,rooms:docs})
-      				});
-      			}
-      		});
-      	}
+        else
+        {
+          groupAdmins.find({'_id':name}).toArray(function(err,result)
+          {
+            if(err != null)
+            {
+              res.send({'err':err});
+            }
+            else if(result.length > 0)
+            {
+              rooms.distinct('room',{'group':group},function(err,docs)
+              {
+                console.log(docs);
+                res.send({"admin":false,rooms:docs})
+              });
+            }
+            else
+            {
+              userGroups.distinct('rooms',{'name':name,'group':group},function(err,docs)
+              {
+                console.log(docs);
+                res.send({"admin":false,rooms:docs})
+              });
+            }
+          });
+        }
       });
-	  }
-	});
+    }
+  });
 });
+
+// promote given user to super admin
 
 app.post('/api/superpromote',function(req,res)
 {
 
-	console.log("request to /api/superpromote");
+  console.log("request to /api/superpromote");
 
-	const name = req.body.name;
+  const name = req.body.name;
 
-	response = {
-		"success":false,
-		"err":""
-	};
+  response = {
+    "success":false,
+    'err':""
+  };
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('superAdmins');
-			collection.insertOne({'_id':name},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-				}
-				else
-				{
-					////console.log(result);
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('superAdmins');
+      collection.insertOne({'_id':name},function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+          res.send({'success':true,'err':result});
+        }
+      });
+    }
+  });
 });
+
+// demote given user from super admin
 
 app.post('/api/superdemote',function(req,res)
 {
-	console.log("request to /api/superdemote");
+  console.log("request to /api/superdemote");
 
-	const name = req.body.name;
+  const name = req.body.name;
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('superAdmins');
-			collection.deleteOne({'_id':name},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-					res.send({'success':false,'err':err.errmsg});
-				}
-				else
-				{
-					////console.log(result);
-					res.send({'sucesss':true,'err':""});
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('superAdmins');
+      collection.deleteOne({'_id':name},function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+          res.send({'success':true,'err':result});
+        }
+      });
+    }
+  });
 });
+
+// promote given user to group admin
 
 app.post('/api/grouppromote',function(req,res)
 {
-	console.log("request to /api/grouppromote");
+  console.log("request to /api/grouppromote");
 
-	const name = req.body.name;
+  const name = req.body.name;
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('groupAdmins');
-			collection.insertOne({'_id':name},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-					res.send({'success':false,'err':err.errmsg});
-				}
-				else
-				{
-					////console.log(result);
-					res.send({'sucesss':true,'err':""});
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('groupAdmins');
+      collection.insertOne({'_id':name},function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+          res.send({'success':true,'err':result});
+        }
+      });
+    }
+  });
 });
+
+// demote given user from group admin
 
 app.post('/api/groupdemote',function(req,res)
 {
 
-	console.log("request to /api/groupdemote");
+  console.log("request to /api/groupdemote");
 
-	const name = req.body.name;
+  const name = req.body.name;
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('groupAdmins');
-			collection.deleteOne({'_id':name},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-					res.send({'success':false,'err':err.errmsg});
-				}
-				else
-				{
-					////console.log(result);
-					res.send({'sucesss':true,'err':""});
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('groupAdmins');
+      collection.deleteOne({'_id':name},function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+          res.send({'success':true,'err':result});
+        }
+      });
+    }
+  });
 });
+
+// create a new group with given name and no starting rooms
 
 app.post('/api/creategroup',function(req,res)
 {
 
-	console.log("request to /api/creategroup");
+  console.log("request to /api/creategroup");
 
-	const group = req.body.group;
+  const group = req.body.group;
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('groups');
-			collection.insertOne({'_id':group,'rooms':[]},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-					res.send({'success':false,'err':err.errmsg});
-				}
-				else
-				{
-					////console.log(result);
-					res.send({'sucesss':true,'err':""});
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('groups');
+      collection.insertOne({'_id':group,'rooms':[]},function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+          res.send({'success':true,'err':result});
+        }
+      });
+    }
+  });
 });
+
+// delete a group with given name
 
 app.post('/api/deletegroup',function(req,res)
 {
-	console.log("request to /api/deletegroup");
+  console.log("request to /api/deletegroup");
 
-	const group = req.body.group;
+  const group = req.body.group;
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('groups');
-			collection.deleteOne({'_id':group},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-					res.send({'success':false,'err':err.errmsg});
-				}
-				else
-				{
-					////console.log(result);
-					res.send({'sucesss':true,'err':""});
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('groups');
+      collection.deleteOne({'_id':group},function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+          res.send({'sucesss':true,'err':result});
+        }
+      });
+    }
+  });
 });
+
+// create a new room of given name within a given group
 
 app.post('/api/createroom',function(req,res)
 {
 
-	console.log("request to /api/createroom");
+  console.log("request to /api/createroom");
 
-	const group = req.body.group;
-	const room = req.body.room;
+  const group = req.body.group;
+  const room = req.body.room;
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('rooms');
-			collection.insertOne({'_id': {'group':group, 'room':room}, 'group':group, 'room':room, 'log':[]},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-					res.send({'success':false,'err':err.errmsg});
-				}
-				else
-				{
-					////console.log(result);
-					res.send({'sucesss':true,'err':""});
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('rooms');
+      collection.insertOne({'_id': {'group':group, 'room':room}, 'group':group, 'room':room, 'log':[]},function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+		}
+        else
+        {
+          res.send({'sucesss':true,'err':result});
+        }
+      });
+    }
+  });
 });
+
+// delete a room of given name within a given group
 
 app.post('/api/deleteroom',function(req,res)
 {
 
-	console.log("request to /api/deleteroom");
+  console.log("request to /api/deleteroom");
 
-	const group = req.body.group;
-	const room = req.body.room;
+  const group = req.body.group;
+  const room = req.body.room;
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('rooms');
-			collection.deleteOne({'_id': {'group':group, 'room':room}},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-					res.send({'success':false,'err':err.errmsg});
-				}
-				else
-				{
-					////console.log(result);
-					res.send({'sucesss':true,'err':""});
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('rooms');
+      collection.deleteOne({'_id': {'group':group, 'room':room}},function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+          res.send({'success':true,'err':result});
+        }
+      });
+    }
+  });
 });
+
+// get data of room with given name inside given group
 
 app.post('/api/room',function(req,res)
 {
-	const compare = (a,b) => {
-	  if (a.time < b.time)
-		return -1;
-	  if (a.time > b.time)
-		return 1;
-	  return 0;
-	};
-	
-	console.log("request to /api/room");
+  const compare = (a,b) => {
+    if (a.time < b.time)
+    return -1;
+    if (a.time > b.time)
+    return 1;
+    return 0;
+  };
+  
+  console.log("request to /api/room");
 
   console.log(req.body);
 
-	const group = req.body.group;
-	const room = req.body.room;
+  const group = req.body.group;
+  const room = req.body.room;
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-      res.send({'success':false,'err':err});
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('rooms');
-			collection.distinct('log',{'_id': {'group':group,'room':room}},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-					res.send({'success':false,'err':err.errmsg});
-				}
-				else
-				{
-					////console.log(result);
-					//console.log(result);
-					result.sort(compare);
-					res.send({'sucesss':true,'data':result});
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('rooms');
+      collection.distinct('log',{'_id': {'group':group,'room':room}},function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+		  // sort by timestamp
+          result.sort(compare);
+          res.send({'sucesss':true,'data':result});
+        }
+      });
+    }
+  });
 });
 
+// new message to insert into chatlog
 app.post('/api/msg',function(req,res)
 {
   console.log('request to /api/msg');
@@ -674,212 +664,206 @@ app.post('/api/msg',function(req,res)
   mc.connect(mongoaddr,{useNewUrlParser: true},function(err,client)
   {
     if(err != null)
-	  {
-	    ////console.log(err);
-      res.send({'err':err});
-	  }
-	  else
-	  {
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
       const collection = client.db('chatserver').collection('rooms');
       collection.updateOne({_id: {group: group, room:room}},{$push : {'log':{'name':name,'time':moment().format('YYYY-MM-DD:hh:mm:ss'), 'msg':msg}}},function(err,result)
       {
         if(err != null)
         {
-          ////console.log(err);
-          res.send({'err':err})
+          res.send({'success':false,'err':err.errmsg});
         }
         else
         {
-          ////console.log(result);
-          res.send({'err':result});
+          res.send({'success':true,'err':result});
         }
       });
     }
   })
 });
 
+// executed on dashboard launch - loads all groups visible to user
+
 app.post('/api/data',function(req,res)
 {
-	console.log("request to /api/data");
+  console.log("request to /api/data");
 
-	console.log(req.body);
+  console.log(req.body);
 
-	const name = req.body.name;
+  const name = req.body.name;
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const users = client.db('chatserver').collection('users');
-			const groups = client.db('chatserver').collection('groups');
-			const superAdmins = client.db('chatserver').collection('superAdmins');
-			const groupAdmins = client.db('chatserver').collection('groupAdmins');
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const users = client.db('chatserver').collection('users');
+      const groups = client.db('chatserver').collection('groups');
+      const superAdmins = client.db('chatserver').collection('superAdmins');
+      const groupAdmins = client.db('chatserver').collection('groupAdmins');
       const userGroups = client.db('chatserver').collection('userGroups');
 
-			superAdmins.find({'_id':name}).toArray(function(err,result)//function(err,result)
-			{
-				if(err != null)
-				{
-					res.send({"err":err});
-				}
-				else if(result.length > 0)
-				{
-					groups.distinct('_id',{},function(err,docs)//.toArray(function(err,docs)
-					{
-						console.log(docs);
-            console.log("super admin");
-						res.send({'rank':'super',groups:docs});
-					});
-				}
-				else
-				{
-					groupAdmins.find({'_id':name}).toArray(function(err,result)
-					{
-						if(err != null)
-						{
-							res.send({"err":err});
-						}
-						else if(result.length > 0)
-						{
-							groups.distinct('_id',{},function(err,docs)//.toArray(function(err,docs)
-							{
-								console.log(docs);
-								res.send({'rank':'group',groups:docs})
-							});
-						}
-						else
-						{
-							userGroups.distinct('group',{'name':name},function(err,docs)//.toArray(function(err,docs)
-							{
-								console.log(docs);
-								res.send({'rank':'standard',groups:docs})
-							});
-						}
-					});
-				}
-			});
-	  }
-	});
+      superAdmins.find({'_id':name}).toArray(function(err,result)//function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'err':err});
+        }
+        else if(result.length > 0)
+        {
+          groups.distinct('_id',{},function(err,docs)
+          {
+            res.send({'rank':'super',groups:docs});
+          });
+        }
+        else
+        {
+          groupAdmins.find({'_id':name}).toArray(function(err,result)
+          {
+            if(err != null)
+            {
+              res.send({'success':false,'err':err});
+            }
+            else if(result.length > 0)
+            {
+              groups.distinct('_id',{},function(err,docs)
+              {
+                res.send({'rank':'group',groups:docs})
+              });
+            }
+            else
+            {
+              userGroups.distinct('group',{'name':name},function(err,docs)
+              {
+                res.send({'rank':'standard',groups:docs})
+              });
+            }
+          });
+        }
+      });
+    }
+  });
 });
+
+// logs user in
 
 app.post('/api/login', function(req, res)
 {
-	console.log("request to /api/login");
+  console.log("request to /api/login");
 
   const name = req.body.name;
   const pass = req.body.pass;
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('users');
-			collection.find({'_id':name, pass: sha256(pass)}).toArray(function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-				}
-				else
-				{
-					if(result.length > 0)
-					{
-						res.send({"loggedIn":true,"err":0});
-					}
-					else
-					{
-						res.send({"loggedIn":false,"err":1});
-					}
-					////console.log(result);
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('users');
+      collection.find({'_id':name, pass: sha256(pass)}).toArray(function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+          if(result.length > 0)
+          {
+            res.send({"loggedIn":true,'err':0});
+          }
+          else
+          {
+            res.send({"loggedIn":false,'err':1});
+          }
+        }
+      });
+    }
+  });
 });
+
+// add user with given name to given group
 
 app.post('/api/groupadd',function(req,res)
 {
-	
-	console.log("request to /api/groupadd");
+  console.log("request to /api/groupadd");
 
-	const name = req.body.name;
-	const group = req.body.group;
+  const name = req.body.name;
+  const group = req.body.group;
 
-	response = {
-		"success":false,
-		"err":""
-	};
+  response = {
+    "success":false,
+    'err':""
+  };
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('userGroups');
-			collection.insertOne({'_id': {'name':name, 'group':group},'name':name, 'group':group, 'rooms' : []},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-					res.send({'success':false,'err':err.errmsg});
-				}
-				else
-				{
-					////console.log(result);
-					res.send({'sucesss':true,'err':""});
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('userGroups');
+      collection.insertOne({'_id': {'name':name, 'group':group},'name':name, 'group':group, 'rooms' : []},function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+          res.send({'sucesss':true,'err':""});
+        }
+      });
+    }
+  });
 });
+
+// remove user with given name from given group
 
 app.post('/api/grouprmv',function(req,res)
 {
-	console.log("request to /api/grouprmv");
+  console.log("request to /api/grouprmv");
 
-	const name = req.body.name;
-	const group = req.body.group;
+  const name = req.body.name;
+  const group = req.body.group;
 
-	response =
-	{
-		"success":false,
-		"err":""
-	};
+  response =
+  {
+    "success":false,
+    'err':""
+  };
 
-	mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
-	{
-	  if(err != null)
-	  {
-	    ////console.log(err);
-	  }
-	  else
-	  {
-	    const collection = client.db('chatserver').collection('userGroups');
-			collection.deleteOne({'name':name, 'group':group},function(err,result)
-			{
-				if(err != null)
-				{
-					////console.log(err);
-					res.send({'success':false,'err':err.errmsg});
-				}
-				else
-				{
-					////console.log(result);
-					
-					res.send({'sucesss':true,'err':""});
-				}
-			});
-	  }
-	});
+  mc.connect(mongoaddr,{useNewUrlParser: true}, function(err,client)
+  {
+    if(err != null)
+    {
+      res.send({'success':false,'err':err.errmsg});
+    }
+    else
+    {
+      const collection = client.db('chatserver').collection('userGroups');
+      collection.deleteOne({'name':name, 'group':group},function(err,result)
+      {
+        if(err != null)
+        {
+          res.send({'success':false,'err':err.errmsg});
+        }
+        else
+        {
+          res.send({'sucesss':true,'err':""});
+        }
+      });
+    }
+  });
 });
